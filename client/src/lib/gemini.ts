@@ -2,15 +2,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface AIAnalysis {
   domain: string;
-  category: string;
-  urgency: string;
-  priority: string;
   severity: string;
   confidence: number;
   reasoning: string;
-  estimatedCost: string;
-  timeToResolve: string;
-  riskLevel: string;
 }
 
 // Client-side Speech-to-Text using Gemini 1.5 (requires VITE_GEMINI_API_KEY)
@@ -145,16 +139,10 @@ export async function analyzeIssue(
     // Fallback analysis
     return {
       domain: "General Maintenance",
-      category: "General Issue",
-      urgency: "STANDARD",
-      priority: "MEDIUM",
-      severity: "MEDIUM",
+      severity: "moderate",
       confidence: 0.5,
       reasoning:
         "Analysis failed, manual review required. Please verify the issue details and category manually.",
-      estimatedCost: "$100-500",
-      timeToResolve: "1-2 days",
-      riskLevel: "MEDIUM",
     };
   }
 }

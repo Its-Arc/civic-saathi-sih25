@@ -21,12 +21,14 @@ export function IssuesManagement({ issues }: IssuesManagementProps) {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800";
-      case "low":
-        return "bg-green-100 text-green-800";
+      case "critical":
+        return "bg-red-600 text-white";
+      case "major":
+        return "bg-red-400 text-white";
+      case "moderate":
+        return "bg-orange-500 text-white";
+      case "minor":
+        return "bg-yellow-400 text-gray-900";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -34,12 +36,14 @@ export function IssuesManagement({ issues }: IssuesManagementProps) {
 
   const getProgressColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case "high":
-        return "bg-red-500";
-      case "medium":
-        return "bg-yellow-500";
-      case "low":
-        return "bg-green-500";
+      case "critical":
+        return "bg-red-600";
+      case "major":
+        return "bg-red-400";
+      case "moderate":
+        return "bg-orange-500";
+      case "minor":
+        return "bg-yellow-400";
       default:
         return "bg-gray-500";
     }

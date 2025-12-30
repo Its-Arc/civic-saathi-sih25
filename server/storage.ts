@@ -133,71 +133,99 @@ export class MemStorage implements IStorage {
     const demoIssues: MaintenanceIssue[] = [
       {
         id: randomUUID(),
-        title: "Water leak in Building A hallway",
+        title: "Dangerous pothole causing vehicle damage on MG Road",
         description:
-          "Major water leak in the hallway near Room 315. Water is spreading rapidly and affecting multiple units. Urgent attention needed!",
-        category: "plumbing",
-        severity: "high",
+          "Large pothole near City Center junction causing multiple two-wheelers to suffer tire damage. Vehicles are swerving dangerously to avoid it, creating risk of accidents. The damaged road surface is deteriorating rapidly.",
+        category: "road_maintenance",
+        severity: "critical",
         status: "in_progress",
-        progress: 75,
-        location: "Building A, Floor 3",
-        imageUrls: ["/sample-images/Water-leaking-into-hallway.jpg"],
+        progress: 72,
+        location: "HITEC City Main Road, Hyderabad, Telangana, India",
+        imageUrls: ["/sample-images/pothole on road.webp"],
         reporterId: regularUser.id,
-        assignedTechnicianId: technicians[0].id,
+        assignedTechnicianId: technicians[2].id,
         aiAnalysis: {
-          category: "Plumbing Emergency",
-          severity: "High",
+          domain: "Infrastructure & Road Safety",
+          severity: "critical",
+          confidence: 0.97,
           reasoning:
-            "Water damage can spread quickly and cause structural damage. Immediate response required to prevent further property damage and potential safety hazards.",
+            "Image shows a large, deep pothole on a heavily trafficked arterial road. The depression appears to be approximately 3 feet in diameter with visible depth of 6-8 inches. Surface deterioration extends beyond the primary crater, indicating progressive asphalt failure. Location on high-traffic route creates immediate collision risk as vehicles must swerve into adjacent lanes. Dark water accumulation suggests drainage issues contributing to structural degradation.",
         },
-        upvotes: 24,
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        updatedAt: new Date(),
-      },
-      {
-        id: randomUUID(),
-        title: "Flickering lights in library",
-        description:
-          "Flickering lights in the main reading area. Affecting multiple study areas and causing distraction for students.",
-        category: "electrical",
-        severity: "medium",
-        status: "assigned",
-        progress: 30,
-        location: "Library Building",
-        imageUrls: ["/sample-images/flickering-light-bulb.jpg"],
-        reporterId: adminUser.id,
-        assignedTechnicianId: technicians[1].id,
-        aiAnalysis: {
-          category: "Electrical Maintenance",
-          severity: "Medium",
-          reasoning:
-            "Electrical issues affecting productivity but not immediately dangerous. Should be scheduled within 24 hours to prevent potential disruption to daily operations.",
-        },
-        upvotes: 12,
+        upvotes: 156,
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
         updatedAt: new Date(),
       },
       {
         id: randomUUID(),
-        title: "Paint peeling in cafeteria",
+        title: "Malfunctioning streetlights creating safety hazards",
         description:
-          "Paint peeling on the wall near the entrance. Not urgent but affects the appearance of the space.",
-        category: "cosmetic",
-        severity: "low",
+          "Multiple streetlights flickering and non-functional along pedestrian pathway. Area becomes dangerously dark after sunset, forcing residents to avoid this route. Women and senior citizens feel unsafe using this path in evenings.",
+        category: "electrical",
+        severity: "major",
+        status: "assigned",
+        progress: 35,
+        location: "Banjara Hills Road No. 12, Hyderabad, Telangana, India",
+        imageUrls: ["/sample-images/flcikering streetlights.webp"],
+        reporterId: adminUser.id,
+        assignedTechnicianId: technicians[1].id,
+        aiAnalysis: {
+          domain: "Public Utilities & Safety",
+          severity: "major",
+          confidence: 0.94,
+          reasoning:
+            "Image captures flickering streetlight with visible electrical malfunction. The light fixture shows intermittent illumination patterns characteristic of ballast or wiring failure. Multiple non-functional units visible along the pathway create extended dark zones. The residential area location and pedestrian pathway context indicate this affects daily commuter safety and security, particularly during evening hours when lighting is critical for crime prevention and accident avoidance.",
+        },
+        upvotes: 89,
+        createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000), // 7 hours ago
+        updatedAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        title: "Damaged traffic sign at school zone crossing",
+        description:
+          "Stop sign bent and barely visible at school pedestrian crossing. Hundreds of children use this crossing daily. Damaged signage fails to warn drivers properly, creating extreme danger for students crossing the road.",
+        category: "traffic_safety",
+        severity: "critical",
         status: "open",
-        progress: 10,
-        location: "Cafeteria",
-        imageUrls: ["/sample-images/paint-peeling-on-wall.jpg"],
+        progress: 8,
+        location:
+          "Secunderabad Railway Station Road, Hyderabad, Telangana, India",
+        imageUrls: ["/sample-images/broken traffic sign.webp"],
         reporterId: regularUser.id,
         assignedTechnicianId: null,
         aiAnalysis: {
-          category: "Cosmetic/Paint",
-          severity: "Low",
+          domain: "Traffic Management & Child Safety",
+          severity: "critical",
+          confidence: 0.96,
           reasoning:
-            "Cosmetic issue that can be scheduled for routine maintenance within 2 weeks. Affects appearance but poses no immediate safety concerns.",
+            "Image shows severely damaged stop sign with post bent at approximately 45-degree angle from vehicular impact. Sign face exhibits significant physical distortion and reduced reflectivity, compromising visibility from approaching vehicle distance. School zone location amplifies urgency as children depend on driver awareness of controlled crossing. The structural failure of mandatory traffic control device creates immediate liability and represents unacceptable pedestrian safety risk requiring emergency replacement.",
         },
-        upvotes: 6,
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+        upvotes: 203,
+        createdAt: new Date(Date.now() - 10 * 60 * 60 * 1000), // 10 hours ago
+        updatedAt: new Date(),
+      },
+      {
+        id: randomUUID(),
+        title: "Overflowing trash bins attracting pests in park",
+        description:
+          "Park waste bins overflowing with garbage around children's play area. Attracting stray animals and insects, creating unhygienic conditions. Foul smell is unbearable during afternoons, discouraging families from using the park.",
+        category: "sanitation",
+        severity: "moderate",
+        status: "open",
+        progress: 5,
+        location: "Gachibowli Indoor Stadium Area, Hyderabad, Telangana, India",
+        imageUrls: ["/sample-images/trash in park.webp"],
+        reporterId: adminUser.id,
+        assignedTechnicianId: null,
+        aiAnalysis: {
+          domain: "Waste Management & Public Health",
+          severity: "moderate",
+          confidence: 0.88,
+          reasoning:
+            "Image reveals multiple overflowing waste receptacles with visible garbage accumulation exceeding container capacity. Scattered litter around bin perimeter indicates inadequate collection frequency and possible wildlife/pest activity. The park setting with visible recreational facilities suggests high public usage area where waste management failure impacts community health and aesthetics. While not immediately life-threatening, accumulated organic waste creates disease vector breeding grounds and degrades public space quality.",
+        },
+        upvotes: 42,
+        createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
         updatedAt: new Date(),
       },
     ];

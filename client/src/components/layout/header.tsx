@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Menu, Bolt, User, LogOut, RotateCcw } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Menu, Bolt, User, LogOut, RotateCcw } from "lucide-react";
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -15,27 +15,27 @@ export function Header({ onMenuToggle }: HeaderProps) {
     try {
       await logout();
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
   const handleResetFeed = async () => {
     try {
-      const response = await fetch('/api/reset-data', { method: 'POST' });
+      const response = await fetch("/api/reset-data", { method: "POST" });
       if (response.ok) {
         window.location.reload();
       } else {
-        console.error('Reset failed');
+        console.error("Reset failed");
       }
     } catch (error) {
-      console.error('Reset failed:', error);
+      console.error("Reset failed:", error);
     }
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-12">
           {/* Left side */}
           <div className="flex items-center space-x-4">
             {/* Hamburger Menu */}
@@ -47,13 +47,15 @@ export function Header({ onMenuToggle }: HeaderProps) {
             >
               <Menu className="text-gray-600" size={20} />
             </Button>
-            
+
             {/* Logo */}
             <div className="flex items-center space-x-2">
               <div className="h-8 w-8 bg-gray-800 rounded-full flex items-center justify-center">
                 <Bolt className="text-white" size={16} />
               </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-900">CivicSaathi</span>
+              <span className="text-lg sm:text-xl font-bold text-gray-900">
+                CivicSaathi
+              </span>
             </div>
           </div>
 
@@ -68,7 +70,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 <span className="text-sm font-medium text-gray-700 truncate max-w-[8rem]">
                   {user.username}
                 </span>
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800"
+                >
                   {user.credibilityScore}
                 </Badge>
               </div>

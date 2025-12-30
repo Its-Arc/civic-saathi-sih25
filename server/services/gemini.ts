@@ -4,15 +4,9 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export interface AIAnalysis {
   domain: string;
-  category: string;
-  urgency: string;
-  priority: string;
   severity: string;
   confidence: number;
   reasoning: string;
-  estimatedCost: string;
-  timeToResolve: string;
-  riskLevel: string;
 }
 
 export async function analyzeMaintenanceIssue(
@@ -25,82 +19,46 @@ export async function analyzeMaintenanceIssue(
       return fallbackAnalysis(description);
     }
 
-    const prompt = `You are an expert facility maintenance analyst with 20+ years of experience. Analyze this maintenance issue comprehensively using BOTH the image and description provided.
+    const prompt = `You are an expert civic infrastructure analyst. Analyze this maintenance issue using BOTH the image and description provided.
 
 DESCRIPTION: "${description}"
 
 ANALYSIS INSTRUCTIONS:
 1. Examine the uploaded image carefully for visual evidence of the maintenance issue
-2. Use the description to provide context, but prioritize what you can see in the image
-3. Look for visual indicators of damage, wear, malfunction, or safety hazards
-4. Assess the severity based on visual evidence in the image
+2. Describe what you observe in the image - damage patterns, structural issues, safety hazards
+3. Use the description as context, but prioritize your visual analysis of the image
+4. Assess the severity based on visual evidence
+5. Keep your reasoning CONCISE - maximum 2-3 sentences (approximately 200 characters)
 
-DOMAINS: Plumbing, Electrical, HVAC, Structural, Fire Safety, Security, IT/Technology, Landscaping, Cleaning, General Maintenance
+SEVERITY LEVELS (Use lowercase exactly as shown):
+- critical: Immediate danger to public safety, major infrastructure failure requiring emergency response
+- major: Significant safety risk or operational disruption requiring urgent attention
+- moderate: Moderate impact with noticeable inconvenience or minor safety concerns
+- minor: Minimal impact, aesthetic issues, or preventive maintenance needs
 
-URGENCY (Response Time):
-- IMMEDIATE: 0-2 hours (life safety, major system failure)
-- URGENT: 2-24 hours (significant operational impact)
-- STANDARD: 1-7 days (normal maintenance)
-- ROUTINE: 1-4 weeks (preventive/cosmetic)
+DOMAINS: Infrastructure & Road Safety, Public Utilities & Safety, Traffic Management & Child Safety, Waste Management & Public Health, etc.
 
-PRIORITY (Business Impact):
-- CRITICAL: Safety/security/core operations affected
-- HIGH: Significant operational disruption
-- MEDIUM: Moderate operational impact
-- LOW: Minor inconvenience/aesthetic
-
-SEVERITY (Risk Level):
-- CRITICAL: Immediate danger/major system failure
-- HIGH: Potential safety risk/significant damage
-- MEDIUM: Moderate impact/minor safety concerns
-- LOW: Minimal impact/cosmetic issues
-
-RISK LEVEL: LOW, MEDIUM, HIGH, CRITICAL
-
-Base your analysis primarily on what you observe in the image. Respond with valid JSON only:
+Respond with valid JSON only:
 {
-  "domain": "primary_domain",
-  "category": "specific_subcategory",
-  "urgency": "IMMEDIATE|URGENT|STANDARD|ROUTINE",
-  "priority": "CRITICAL|HIGH|MEDIUM|LOW",
-  "severity": "CRITICAL|HIGH|MEDIUM|LOW",
+  "domain": "specific domain name",
+  "severity": "critical|major|moderate|minor",
   "confidence": 0.95,
-  "reasoning": "Detailed analysis based on visual evidence in the image and description context",
-  "estimatedCost": "$50-100",
-  "timeToResolve": "2-4 hours",
-  "riskLevel": "LOW|MEDIUM|HIGH|CRITICAL"
+  "reasoning": "Brief visual analysis in 2-3 sentences maximum - describe key observations concisely"
 }`;
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash-exp",
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: {
           type: "object",
           properties: {
             domain: { type: "string" },
-            category: { type: "string" },
-            urgency: { type: "string" },
-            priority: { type: "string" },
             severity: { type: "string" },
             confidence: { type: "number" },
             reasoning: { type: "string" },
-            estimatedCost: { type: "string" },
-            timeToResolve: { type: "string" },
-            riskLevel: { type: "string" },
           },
-          required: [
-            "domain",
-            "category",
-            "urgency",
-            "priority",
-            "severity",
-            "confidence",
-            "reasoning",
-            "estimatedCost",
-            "timeToResolve",
-            "riskLevel",
-          ],
+          required: ["domain", "severity", "confidence", "reasoning"],
         },
       },
     });
@@ -137,9 +95,6 @@ Base your analysis primarily on what you observe in the image. Respond with vali
     // Validate the response
     if (
       !analysis.domain ||
-      !analysis.category ||
-      !analysis.urgency ||
-      !analysis.priority ||
       !analysis.severity ||
       typeof analysis.confidence !== "number" ||
       !analysis.reasoning
@@ -175,9 +130,8 @@ function fallbackAnalysis(description: string): AIAnalysis {
     text.includes(keyword)
   );
 
-  // Domain and category detection
+  // Domain detection
   let domain = "General Maintenance";
-  let category = "General Issue";
 
   if (
     text.includes("water") ||
@@ -186,7 +140,6 @@ function fallbackAnalysis(description: string): AIAnalysis {
     text.includes("plumb")
   ) {
     domain = "Plumbing";
-    category = "Water System Issue";
   } else if (
     text.includes("light") ||
     text.includes("electric") ||
@@ -194,70 +147,51 @@ function fallbackAnalysis(description: string): AIAnalysis {
     text.includes("outlet")
   ) {
     domain = "Electrical";
-    category = "Electrical System Issue";
   } else if (
-    text.includes("heat") ||
-    text.includes("cool") ||
-    text.includes("hvac") ||
-    text.includes("air")
+    text.includes("pothole") ||
+    text.includes("road") ||
+    text.includes("pavement")
   ) {
-    domain = "HVAC";
-    category = "Climate Control Issue";
+    domain = "Infrastructure & Road Safety";
   } else if (
-    text.includes("paint") ||
-    text.includes("cosmetic") ||
-    text.includes("appearance")
+    text.includes("traffic") ||
+    text.includes("sign") ||
+    text.includes("signal")
   ) {
-    domain = "General Maintenance";
-    category = "Cosmetic Issue";
+    domain = "Traffic Management";
   } else if (
-    text.includes("structure") ||
-    text.includes("crack") ||
-    text.includes("foundation")
+    text.includes("trash") ||
+    text.includes("garbage") ||
+    text.includes("waste")
   ) {
-    domain = "Structural";
-    category = "Structural Issue";
+    domain = "Waste Management";
   }
 
-  // Urgency, priority, and severity detection
-  let urgency = "STANDARD";
-  let priority = "MEDIUM";
-  let severity = "MEDIUM";
-  let riskLevel = "MEDIUM";
-  let estimatedCost = "$100-500";
-  let timeToResolve = "1-2 days";
+  // Severity detection
+  let severity = "moderate";
 
-  if (isEmergency || text.includes("urgent") || text.includes("immediate")) {
-    urgency = "URGENT";
-    priority = "HIGH";
-    severity = "HIGH";
-    riskLevel = "HIGH";
-    estimatedCost = "$500-2000";
-    timeToResolve = "2-8 hours";
+  if (
+    isEmergency ||
+    text.includes("urgent") ||
+    text.includes("immediate") ||
+    text.includes("danger")
+  ) {
+    severity = "critical";
+  } else if (text.includes("major") || text.includes("significant")) {
+    severity = "major";
   } else if (
     text.includes("minor") ||
     text.includes("cosmetic") ||
     text.includes("routine")
   ) {
-    urgency = "ROUTINE";
-    priority = "LOW";
-    severity = "LOW";
-    riskLevel = "LOW";
-    estimatedCost = "$50-200";
-    timeToResolve = "1-2 weeks";
+    severity = "minor";
   }
 
   return {
     domain,
-    category,
-    urgency,
-    priority,
     severity,
     confidence: 0.6,
     reasoning:
       "Fallback analysis due to AI service unavailability. Manual review recommended for accurate assessment.",
-    estimatedCost,
-    timeToResolve,
-    riskLevel,
   };
 }

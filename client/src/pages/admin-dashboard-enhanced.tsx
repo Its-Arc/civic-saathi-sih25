@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
   const [showDomainDetails, setShowDomainDetails] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<MaintenanceIssue | null>(
-    null,
+    null
   );
 
   const { data: issues } = useQuery<(MaintenanceIssue & { reporter: User })[]>({
@@ -93,12 +93,12 @@ export default function AdminDashboardPage() {
     switch (severity.toLowerCase()) {
       case "critical":
         return "bg-red-600 text-white";
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800";
-      case "low":
-        return "bg-green-100 text-green-800";
+      case "major":
+        return "bg-red-400 text-white";
+      case "moderate":
+        return "bg-orange-500 text-white";
+      case "minor":
+        return "bg-yellow-400 text-gray-900";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
         // Mock filter - in real app, technicians would be assigned to domains
         t.specialty
           .toLowerCase()
-          .includes(selectedDomainData?.name.toLowerCase().split(" ")[0] || ""),
+          .includes(selectedDomainData?.name.toLowerCase().split(" ")[0] || "")
       )
     : [];
 
@@ -167,7 +167,9 @@ export default function AdminDashboardPage() {
             <FileText className="h-4 w-4 text-admin-mid" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-admin-dark">{stats.total}</div>
+            <div className="text-2xl font-bold text-admin-dark">
+              {stats.total}
+            </div>
             <p className="text-xs text-muted-foreground">All time reports</p>
           </CardContent>
         </Card>
@@ -257,7 +259,9 @@ export default function AdminDashboardPage() {
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <h4 className="font-medium truncate pr-2">{issue.title}</h4>
+                          <h4 className="font-medium truncate pr-2">
+                            {issue.title}
+                          </h4>
                           <Badge className={getSeverityColor(issue.severity)}>
                             {issue.severity.toUpperCase()}
                           </Badge>
@@ -295,7 +299,9 @@ export default function AdminDashboardPage() {
                       <div className="flex items-center sm:items-end gap-2 sm:gap-3">
                         <div className="text-right mr-1 sm:mr-2">
                           <div className="text-xs text-gray-600">Progress</div>
-                          <div className="text-base font-bold">{issue.progress}%</div>
+                          <div className="text-base font-bold">
+                            {issue.progress}%
+                          </div>
                         </div>
 
                         <Button
@@ -337,102 +343,164 @@ export default function AdminDashboardPage() {
         <TabsContent value="departments" className="space-y-6 animate-fade-in">
           {(() => {
             try {
-            // Define departments and matching keywords
-            const departments = [
-              {
-                key: 'roads',
-                name: 'Roads & Infrastructure',
-                desc:
-                  'Handles construction, repair, and upkeep of roads and public infrastructure. Ensures safe commuting and smooth connectivity.',
-                keywords: ['road', 'infrastructure', 'pothole', 'bridge', 'sidewalk', 'footpath'],
-              },
-              {
-                key: 'sewage',
-                name: 'Sewage & Drainage',
-                desc:
-                  'Responsible for managing sewage systems and stormwater drainage. Works to prevent flooding and maintain sanitation.',
-                keywords: ['sewage', 'drain', 'drainage', 'stormwater', 'sewer'],
-              },
-              {
-                key: 'lights',
-                name: 'Street Lights',
-                desc:
-                  'Oversees installation and maintenance of street lights. Ensures well-lit streets for public safety during night hours.',
-                keywords: ['street light', 'streetlight', 'lamp', 'lighting', 'pole light'],
-              },
-              {
-                key: 'garbage',
-                name: 'Garbage & Sanitation',
-                desc:
-                  'Manages solid waste collection and disposal. Maintains cleanliness and promotes hygienic urban living.',
-                keywords: ['garbage', 'trash', 'waste', 'sanitation', 'cleanliness', 'dump'],
-              },
-              {
-                key: 'water',
-                name: 'Water Supply',
-                desc:
-                  'Ensures safe and adequate drinking water distribution. Handles water pipelines, supply issues, and leak repairs.',
-                keywords: ['water', 'pipeline', 'leak', 'tap', 'drinking'],
-              },
-              {
-                key: 'electrical',
-                name: 'Electrical Department',
-                desc:
-                  'Maintains civic electrical infrastructure. Addresses outages, wiring faults, and ensures uninterrupted public services.',
-                keywords: ['electrical', 'power', 'wire', 'transformer', 'outage'],
-              },
-            ] as const
+              // Define departments and matching keywords
+              const departments = [
+                {
+                  key: "roads",
+                  name: "Roads & Infrastructure",
+                  desc: "Handles construction, repair, and upkeep of roads and public infrastructure. Ensures safe commuting and smooth connectivity.",
+                  keywords: [
+                    "road",
+                    "infrastructure",
+                    "pothole",
+                    "bridge",
+                    "sidewalk",
+                    "footpath",
+                  ],
+                },
+                {
+                  key: "sewage",
+                  name: "Sewage & Drainage",
+                  desc: "Responsible for managing sewage systems and stormwater drainage. Works to prevent flooding and maintain sanitation.",
+                  keywords: [
+                    "sewage",
+                    "drain",
+                    "drainage",
+                    "stormwater",
+                    "sewer",
+                  ],
+                },
+                {
+                  key: "lights",
+                  name: "Street Lights",
+                  desc: "Oversees installation and maintenance of street lights. Ensures well-lit streets for public safety during night hours.",
+                  keywords: [
+                    "street light",
+                    "streetlight",
+                    "lamp",
+                    "lighting",
+                    "pole light",
+                  ],
+                },
+                {
+                  key: "garbage",
+                  name: "Garbage & Sanitation",
+                  desc: "Manages solid waste collection and disposal. Maintains cleanliness and promotes hygienic urban living.",
+                  keywords: [
+                    "garbage",
+                    "trash",
+                    "waste",
+                    "sanitation",
+                    "cleanliness",
+                    "dump",
+                  ],
+                },
+                {
+                  key: "water",
+                  name: "Water Supply",
+                  desc: "Ensures safe and adequate drinking water distribution. Handles water pipelines, supply issues, and leak repairs.",
+                  keywords: ["water", "pipeline", "leak", "tap", "drinking"],
+                },
+                {
+                  key: "electrical",
+                  name: "Electrical Department",
+                  desc: "Maintains civic electrical infrastructure. Addresses outages, wiring faults, and ensures uninterrupted public services.",
+                  keywords: [
+                    "electrical",
+                    "power",
+                    "wire",
+                    "transformer",
+                    "outage",
+                  ],
+                },
+              ] as const;
 
-            const matchIssue = (issue: any, keywords: string[]) => {
-              const text = (
-                (issue.category || '') + ' ' + (issue.title || '') + ' ' + (issue.description || '')
-              ).toLowerCase()
-              return keywords.some((k) => text.includes(k))
-            }
+              const matchIssue = (issue: any, keywords: string[]) => {
+                const text = (
+                  (issue.category || "") +
+                  " " +
+                  (issue.title || "") +
+                  " " +
+                  (issue.description || "")
+                ).toLowerCase();
+                return keywords.some((k) => text.includes(k));
+              };
 
-            return (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {departments.map((dept) => {
-                  const deptIssues = (issues || []).filter((i) => matchIssue(i, dept.keywords))
-                  return (
-                    <Card key={dept.key} className="admin-card hover-lift">
-                      <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">{dept.name}</CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">{dept.desc}</p>
-                      </CardHeader>
-                      <CardContent>
-                        {deptIssues.length === 0 ? (
-                          <p className="text-sm text-gray-500">No issues reported yet.</p>
-                        ) : (
-                          <div className="space-y-3">
-                            {deptIssues.map((issue) => (
-                              <div key={issue.id} className="border rounded-lg p-3 hover:bg-gray-50 transition">
-                                <div className="flex items-center justify-between">
-                                  <h4 className="font-medium text-gray-900 truncate pr-3">{issue.title}</h4>
-                                  <Badge className={getSeverityColor(issue.severity)}>{issue.severity.toUpperCase()}</Badge>
+              return (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {departments.map((dept) => {
+                    const deptIssues = (issues || []).filter((i) =>
+                      matchIssue(i, dept.keywords)
+                    );
+                    return (
+                      <Card key={dept.key} className="admin-card hover-lift">
+                        <CardHeader>
+                          <CardTitle className="text-base sm:text-lg">
+                            {dept.name}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {dept.desc}
+                          </p>
+                        </CardHeader>
+                        <CardContent>
+                          {deptIssues.length === 0 ? (
+                            <p className="text-sm text-gray-500">
+                              No issues reported yet.
+                            </p>
+                          ) : (
+                            <div className="space-y-3">
+                              {deptIssues.map((issue) => (
+                                <div
+                                  key={issue.id}
+                                  className="border rounded-lg p-3 hover:bg-gray-50 transition"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium text-gray-900 truncate pr-3">
+                                      {issue.title}
+                                    </h4>
+                                    <Badge
+                                      className={getSeverityColor(
+                                        issue.severity
+                                      )}
+                                    >
+                                      {issue.severity.toUpperCase()}
+                                    </Badge>
+                                  </div>
+                                  <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                                    {issue.description}
+                                  </p>
+                                  <div className="mt-2 text-xs text-gray-500 flex items-center gap-3">
+                                    {issue.location && (
+                                      <span className="flex items-center gap-1">
+                                        <MapPin size={12} />
+                                        {issue.location}
+                                      </span>
+                                    )}
+                                    <span className="flex items-center gap-1">
+                                      <Calendar size={12} />
+                                      {formatDistanceToNow(
+                                        new Date(issue.createdAt!),
+                                        { addSuffix: true }
+                                      )}
+                                    </span>
+                                  </div>
                                 </div>
-                                <p className="mt-1 text-sm text-gray-600 line-clamp-2">{issue.description}</p>
-                                <div className="mt-2 text-xs text-gray-500 flex items-center gap-3">
-                                  {issue.location && (
-                                    <span className="flex items-center gap-1"><MapPin size={12} />{issue.location}</span>
-                                  )}
-                                  <span className="flex items-center gap-1"><Calendar size={12} />
-                                    {formatDistanceToNow(new Date(issue.createdAt!), { addSuffix: true })}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
-            )
+                              ))}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              );
             } catch (e) {
-              console.error('Departments render error', e)
-              return <p className="text-sm text-red-600">Unable to load departments.</p>
+              console.error("Departments render error", e);
+              return (
+                <p className="text-sm text-red-600">
+                  Unable to load departments.
+                </p>
+              );
             }
           })()}
         </TabsContent>
@@ -441,92 +509,189 @@ export default function AdminDashboardPage() {
         <TabsContent value="technicians" className="space-y-6 animate-fade-in">
           {(() => {
             const deptMap: Record<string, string[]> = {
-              roads: ['road', 'bridge', 'pothole', 'infrastructure'],
-              sewage: ['sewage', 'drain', 'drainage', 'stormwater'],
-              lights: ['light', 'streetlight', 'lamp'],
-              garbage: ['garbage', 'sanitation', 'waste', 'clean'],
-              water: ['water', 'pipeline', 'leak'],
-              electrical: ['electrical', 'power', 'wire', 'transformer'],
-            }
+              roads: ["road", "bridge", "pothole", "infrastructure"],
+              sewage: ["sewage", "drain", "drainage", "stormwater"],
+              lights: ["light", "streetlight", "lamp"],
+              garbage: ["garbage", "sanitation", "waste", "clean"],
+              water: ["water", "pipeline", "leak"],
+              electrical: ["electrical", "power", "wire", "transformer"],
+            };
 
-            const fallbackTechs: Record<string, { name: string; phone: string; designation: string; email: string }[]> = {
+            const fallbackTechs: Record<
+              string,
+              {
+                name: string;
+                phone: string;
+                designation: string;
+                email: string;
+              }[]
+            > = {
               roads: [
-                { name: 'Rajiv Kumar', phone: '+91-98123-45678', designation: 'Junior Engineer', email: 'rajiv.kumar@municipal.gov.in' },
-                { name: 'Anita Sharma', phone: '+91-98765-01234', designation: 'Supervisor', email: 'anita.sharma@municipal.gov.in' },
-                { name: 'Deepak Gupta', phone: '+91-98970-11223', designation: 'Field Technician', email: 'deepak.gupta@municipal.gov.in' },
+                {
+                  name: "Rajiv Kumar",
+                  phone: "+91-98123-45678",
+                  designation: "Junior Engineer",
+                  email: "rajiv.kumar@municipal.gov.in",
+                },
+                {
+                  name: "Anita Sharma",
+                  phone: "+91-98765-01234",
+                  designation: "Supervisor",
+                  email: "anita.sharma@municipal.gov.in",
+                },
+                {
+                  name: "Deepak Gupta",
+                  phone: "+91-98970-11223",
+                  designation: "Field Technician",
+                  email: "deepak.gupta@municipal.gov.in",
+                },
               ],
               sewage: [
-                { name: 'Vikram Singh', phone: '+91-98900-11223', designation: 'Field Technician', email: 'vikram.singh@municipal.gov.in' },
-                { name: 'Rachna Pandey', phone: '+91-98110-33445', designation: 'Supervisor', email: 'rachna.pandey@municipal.gov.in' },
+                {
+                  name: "Vikram Singh",
+                  phone: "+91-98900-11223",
+                  designation: "Field Technician",
+                  email: "vikram.singh@municipal.gov.in",
+                },
+                {
+                  name: "Rachna Pandey",
+                  phone: "+91-98110-33445",
+                  designation: "Supervisor",
+                  email: "rachna.pandey@municipal.gov.in",
+                },
               ],
               lights: [
-                { name: 'Neha Verma', phone: '+91-98223-34455', designation: 'Senior Officer', email: 'neha.verma@municipal.gov.in' },
-                { name: 'Manish Bhatia', phone: '+91-98122-55667', designation: 'Field Technician', email: 'manish.bhatia@municipal.gov.in' },
+                {
+                  name: "Neha Verma",
+                  phone: "+91-98223-34455",
+                  designation: "Senior Officer",
+                  email: "neha.verma@municipal.gov.in",
+                },
+                {
+                  name: "Manish Bhatia",
+                  phone: "+91-98122-55667",
+                  designation: "Field Technician",
+                  email: "manish.bhatia@municipal.gov.in",
+                },
               ],
               garbage: [
-                { name: 'Amit Chauhan', phone: '+91-98111-12233', designation: 'Supervisor', email: 'amit.chauhan@municipal.gov.in' },
-                { name: 'Sunita Arora', phone: '+91-98760-77889', designation: 'Sanitation Officer', email: 'sunita.arora@municipal.gov.in' },
+                {
+                  name: "Amit Chauhan",
+                  phone: "+91-98111-12233",
+                  designation: "Supervisor",
+                  email: "amit.chauhan@municipal.gov.in",
+                },
+                {
+                  name: "Sunita Arora",
+                  phone: "+91-98760-77889",
+                  designation: "Sanitation Officer",
+                  email: "sunita.arora@municipal.gov.in",
+                },
               ],
               water: [
-                { name: 'Pooja Mishra', phone: '+91-98987-65432', designation: 'Junior Engineer', email: 'pooja.mishra@municipal.gov.in' },
-                { name: 'Harish Tiwari', phone: '+91-98100-66778', designation: 'Supervisor', email: 'harish.tiwari@municipal.gov.in' },
+                {
+                  name: "Pooja Mishra",
+                  phone: "+91-98987-65432",
+                  designation: "Junior Engineer",
+                  email: "pooja.mishra@municipal.gov.in",
+                },
+                {
+                  name: "Harish Tiwari",
+                  phone: "+91-98100-66778",
+                  designation: "Supervisor",
+                  email: "harish.tiwari@municipal.gov.in",
+                },
               ],
               electrical: [
-                { name: 'Sandeep Yadav', phone: '+91-98765-43210', designation: 'Field Technician', email: 'sandeep.yadav@municipal.gov.in' },
-                { name: 'Rohit Khanna', phone: '+91-98990-22334', designation: 'Senior Officer', email: 'rohit.khanna@municipal.gov.in' },
+                {
+                  name: "Sandeep Yadav",
+                  phone: "+91-98765-43210",
+                  designation: "Field Technician",
+                  email: "sandeep.yadav@municipal.gov.in",
+                },
+                {
+                  name: "Rohit Khanna",
+                  phone: "+91-98990-22334",
+                  designation: "Senior Officer",
+                  email: "rohit.khanna@municipal.gov.in",
+                },
               ],
-            }
+            };
 
-            const groups = Object.keys(deptMap).map((k) => ({ key: k, techs: [] as any[] }))
+            const groups = Object.keys(deptMap).map((k) => ({
+              key: k,
+              techs: [] as any[],
+            }));
 
-            ;(Array.isArray(technicians) ? technicians : []).forEach((t: any) => {
-              const s = String(t?.specialty ?? '').toLowerCase()
-              const matchedKey = Object.entries(deptMap).find(([_, kws]) => kws.some((kw) => s.includes(kw)))?.[0]
-              if (matchedKey) {
-                const gObj = groups.find((g) => g.key === matchedKey)
-                if (gObj) gObj.techs.push(t)
+            (Array.isArray(technicians) ? technicians : []).forEach(
+              (t: any) => {
+                const s = String(t?.specialty ?? "").toLowerCase();
+                const matchedKey = Object.entries(deptMap).find(([_, kws]) =>
+                  kws.some((kw) => s.includes(kw))
+                )?.[0];
+                if (matchedKey) {
+                  const gObj = groups.find((g) => g.key === matchedKey);
+                  if (gObj) gObj.techs.push(t);
+                }
               }
-            })
+            );
 
             return (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {groups.map((g) => {
-                  const human = fallbackTechs[g.key] ?? []
-                  const list = Array.isArray(g.techs) && g.techs.length > 0 ? g.techs : human
+                  const human = fallbackTechs[g.key] ?? [];
+                  const list =
+                    Array.isArray(g.techs) && g.techs.length > 0
+                      ? g.techs
+                      : human;
                   const titleMap: Record<string, string> = {
-                    roads: 'Roads & Infrastructure',
-                    sewage: 'Sewage & Drainage',
-                    lights: 'Street Lights',
-                    garbage: 'Garbage & Sanitation',
-                    water: 'Water Supply',
-                    electrical: 'Electrical Department',
-                  }
+                    roads: "Roads & Infrastructure",
+                    sewage: "Sewage & Drainage",
+                    lights: "Street Lights",
+                    garbage: "Garbage & Sanitation",
+                    water: "Water Supply",
+                    electrical: "Electrical Department",
+                  };
                   return (
                     <Card key={g.key} className="admin-card hover-lift">
                       <CardHeader>
                         <CardTitle>{titleMap[g.key]}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        {(!Array.isArray(list) || list.length === 0) ? (
-                          <p className="text-sm text-gray-500">No technicians assigned yet.</p>
+                        {!Array.isArray(list) || list.length === 0 ? (
+                          <p className="text-sm text-gray-500">
+                            No technicians assigned yet.
+                          </p>
                         ) : (
                           <div className="space-y-3">
                             {list.map((t: any, idx: number) => (
-                              <div key={(t && t.id) || idx} className="border rounded-lg p-3">
+                              <div
+                                key={(t && t.id) || idx}
+                                className="border rounded-lg p-3"
+                              >
                                 <div className="flex items-center justify-between mb-1">
-                                  <h4 className="font-medium text-gray-900">{t.name}</h4>
-                                  <Badge className="capitalize bg-blue-100 text-blue-800">{t.designation || t.role || 'Technician'}</Badge>
+                                  <h4 className="font-medium text-gray-900">
+                                    {t.name}
+                                  </h4>
+                                  <Badge className="capitalize bg-blue-100 text-blue-800">
+                                    {t.designation || t.role || "Technician"}
+                                  </Badge>
                                 </div>
                                 <div className="text-sm text-gray-700 space-y-1">
                                   <div className="flex items-center gap-2">
-                                    <Phone size={14} /> <span>{t.phone || '+91-98XXXXXXXX'}</span>
+                                    <Phone size={14} />{" "}
+                                    <span>{t.phone || "+91-98XXXXXXXX"}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Mail size={14} /> <span className="text-blue-600">{t.email || 'contact@municipal.gov.in'}</span>
+                                    <Mail size={14} />{" "}
+                                    <span className="text-blue-600">
+                                      {t.email || "contact@municipal.gov.in"}
+                                    </span>
                                   </div>
                                   {t.specialty && (
                                     <div className="flex items-center gap-2 text-gray-600">
-                                      <Users size={14} /> <span>{t.specialty}</span>
+                                      <Users size={14} />{" "}
+                                      <span>{t.specialty}</span>
                                     </div>
                                   )}
                                 </div>
@@ -536,10 +701,10 @@ export default function AdminDashboardPage() {
                         )}
                       </CardContent>
                     </Card>
-                  )
+                  );
                 })}
               </div>
-            )
+            );
           })()}
         </TabsContent>
       </Tabs>
@@ -600,8 +765,8 @@ export default function AdminDashboardPage() {
                               tech.status === "available"
                                 ? "bg-green-500"
                                 : tech.status === "busy"
-                                  ? "bg-yellow-500"
-                                  : "bg-red-500"
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
                             }`}
                           />
                         </div>
