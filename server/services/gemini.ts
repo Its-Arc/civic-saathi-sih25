@@ -1,12 +1,57 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const apiKey = process.env.GEMINI_API_KEY || "";
+console.log(`[Gemini] API Key loaded: ${apiKey ? apiKey.substring(0, 10) + "..." : "MISSING"}`);
+const genAI = new GoogleGenerativeAI(apiKey);
 
+/**
+ * AIAnalysis includes both `domain` (human-readable) and `category` (for DB storage).
+ * The `category` field is derived from the domain to satisfy Zod schema requirements.
+ */
 export interface AIAnalysis {
   domain: string;
+  category: string; // Required for issue creation - derived from domain
   severity: string;
   confidence: number;
   reasoning: string;
+}
+
+/**
+ * Derives a DB-compatible category from a human-readable domain string.
+ * This ensures Zod validation passes even when AI falls back.
+ */
+function deriveCategoryFromDomain(domain: string): string {
+  const d = domain.toLowerCase();
+  if (
+    d.includes("road") ||
+    d.includes("infrastructure") ||
+    d.includes("pothole")
+  ) {
+    return "road_maintenance";
+  }
+  if (d.includes("electric") || d.includes("power") || d.includes("light")) {
+    return "electrical";
+  }
+  if (d.includes("traffic") || d.includes("sign") || d.includes("signal")) {
+    return "traffic_safety";
+  }
+  if (
+    d.includes("waste") ||
+    d.includes("garbage") ||
+    d.includes("sanitation") ||
+    d.includes("trash")
+  ) {
+    return "sanitation";
+  }
+  if (
+    d.includes("plumb") ||
+    d.includes("water") ||
+    d.includes("pipe") ||
+    d.includes("leak")
+  ) {
+    return "plumbing";
+  }
+  return "general"; // Fallback category
 }
 
 export async function analyzeMaintenanceIssue(
@@ -47,7 +92,7 @@ Respond with valid JSON only:
 }`;
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash", // Model that was working before
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -100,6 +145,11 @@ Respond with valid JSON only:
       !analysis.reasoning
     ) {
       throw new Error("Invalid analysis format");
+    }
+
+    // Derive category from domain if AI didn't provide it
+    if (!analysis.category) {
+      analysis.category = deriveCategoryFromDomain(analysis.domain);
     }
 
     return analysis;
@@ -189,6 +239,7 @@ function fallbackAnalysis(description: string): AIAnalysis {
 
   return {
     domain,
+    category: deriveCategoryFromDomain(domain), // Derive category to satisfy Zod schema
     severity,
     confidence: 0.6,
     reasoning:

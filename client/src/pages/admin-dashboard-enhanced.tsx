@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -717,6 +718,9 @@ export default function AdminDashboardPage() {
               <Building2 size={20} />
               <span>{selectedDomainData?.name} Details</span>
             </DialogTitle>
+            <DialogDescription>
+              View statistics and assigned technicians for this domain
+            </DialogDescription>
           </DialogHeader>
 
           {selectedDomainData && (

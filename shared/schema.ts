@@ -114,6 +114,7 @@ export const insertMaintenanceIssueSchema = createInsertSchema(
     aiAnalysis: z
       .object({
         domain: z.string(),
+        category: z.string().optional(), // Category derived from domain for DB storage
         severity: z.string(),
         confidence: z.number(),
         reasoning: z.string(),

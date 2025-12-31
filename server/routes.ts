@@ -38,7 +38,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(user);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid user data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid user data", errors: error.errors });
       }
       res.status(500).json({ message: "Internal server error" });
     }
@@ -74,7 +76,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId) {
         return res.status(400).json({ message: "User ID required" });
       }
-      
+
       const issues = await storage.getUserIssues(userId);
       res.json(issues);
     } catch (error) {
@@ -92,7 +94,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Issue creation error:", error);
       if (error instanceof z.ZodError) {
         console.error("Validation errors:", error.errors);
-        return res.status(400).json({ message: "Invalid issue data", errors: error.errors });
+        return res
+          .status(400)
+          .json({ message: "Invalid issue data", errors: error.errors });
       }
       res.status(500).json({ message: "Internal server error" });
     }
@@ -170,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/analyze-issue", async (req, res) => {
     try {
       const { description, imageBase64 } = req.body;
-      
+
       if (!description) {
         return res.status(400).json({ message: "Description is required" });
       }
@@ -204,6 +208,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(comment);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Geocoding API - proxies requests to Nominatim to avoid CORS issues
+  app.get("/api/geocode", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query) {
+        return res
+          .status(400)
+          .json({ message: "Query parameter 'q' is required" });
+      }
+
+      const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+        query
+      )}`;
+
+      const response = await fetch(nominatimUrl, {
+        headers: {
+          "User-Agent": "CivicSaathi-Demo/1.0", // Required by Nominatim
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.warn(`[Geocode] Nominatim returned ${response.status}`);
+        return res
+          .status(response.status)
+          .json({ message: "Geocoding failed" });
+      }
+
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      res.status(500).json({ message: "Geocoding failed" });
     }
   });
 

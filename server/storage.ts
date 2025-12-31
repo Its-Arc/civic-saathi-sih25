@@ -129,7 +129,8 @@ export class MemStorage implements IStorage {
 
     technicians.forEach((tech) => this.technicians.set(tech.id, tech));
 
-    // Create demo issues
+    // Create demo issues with pre-geocoded coordinates for Nizampet/Bachupally area
+    // Format: "lat, lng" which the map can parse directly without geocoding
     const demoIssues: MaintenanceIssue[] = [
       {
         id: randomUUID(),
@@ -140,7 +141,7 @@ export class MemStorage implements IStorage {
         severity: "critical",
         status: "in_progress",
         progress: 72,
-        location: "HITEC City Main Road, Hyderabad, Telangana, India",
+        location: "17.5186, 78.3885", // Nizampet Main Road coordinates
         imageUrls: ["/sample-images/pothole on road.webp"],
         reporterId: regularUser.id,
         assignedTechnicianId: technicians[2].id,
@@ -164,7 +165,7 @@ export class MemStorage implements IStorage {
         severity: "major",
         status: "assigned",
         progress: 35,
-        location: "Banjara Hills Road No. 12, Hyderabad, Telangana, India",
+        location: "17.5450, 78.3700", // Bachupally Cross Roads coordinates
         imageUrls: ["/sample-images/flcikering streetlights.webp"],
         reporterId: adminUser.id,
         assignedTechnicianId: technicians[1].id,
@@ -188,8 +189,7 @@ export class MemStorage implements IStorage {
         severity: "critical",
         status: "open",
         progress: 8,
-        location:
-          "Secunderabad Railway Station Road, Hyderabad, Telangana, India",
+        location: "17.5210, 78.3820", // Nizampet X Roads coordinates
         imageUrls: ["/sample-images/broken traffic sign.webp"],
         reporterId: regularUser.id,
         assignedTechnicianId: null,
@@ -213,7 +213,7 @@ export class MemStorage implements IStorage {
         severity: "moderate",
         status: "open",
         progress: 5,
-        location: "Gachibowli Indoor Stadium Area, Hyderabad, Telangana, India",
+        location: "17.5320, 78.3750", // Bachupally Road near JNTU coordinates
         imageUrls: ["/sample-images/trash in park.webp"],
         reporterId: adminUser.id,
         assignedTechnicianId: null,

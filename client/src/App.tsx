@@ -4,7 +4,12 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -131,10 +136,12 @@ function AuthenticatedApp() {
                   />
                 </svg>
               </button>
-              <h2 className="text-lg font-semibold">Issue Map</h2>
-              <p className="text-sm text-gray-600">
+              <SheetTitle className="text-lg font-semibold">
+                Issue Pins and Heatmap
+              </SheetTitle>
+              <SheetDescription className="sr-only">
                 View all reported issues on the map
-              </p>
+              </SheetDescription>
             </div>
             <div className="flex-1 relative">
               <MapView issues={issues} />
@@ -146,6 +153,11 @@ function AuthenticatedApp() {
       {/* Report Sheet */}
       <Sheet open={showReportSheet} onOpenChange={setShowReportSheet}>
         <SheetContent side="right" className="w-full p-0 overflow-y-auto">
+          {/* Visually hidden but accessible title and description for screen readers */}
+          <SheetTitle className="sr-only">Report an Issue</SheetTitle>
+          <SheetDescription className="sr-only">
+            Use this form to report a new maintenance issue in your area
+          </SheetDescription>
           <div className="p-4 relative">
             <button
               onClick={() => setShowReportSheet(false)}

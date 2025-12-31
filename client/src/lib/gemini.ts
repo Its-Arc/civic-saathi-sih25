@@ -1,7 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+/**
+ * AIAnalysis includes both `domain` (human-readable) and `category` (for DB storage).
+ * The `category` field is derived from the domain to satisfy Zod schema requirements.
+ */
 export interface AIAnalysis {
   domain: string;
+  category: string; // Required for issue creation - derived from domain
   severity: string;
   confidence: number;
   reasoning: string;
@@ -136,9 +141,10 @@ export async function analyzeIssue(
     return await response.json();
   } catch (error) {
     console.error("Error analyzing issue:", error);
-    // Fallback analysis
+    // Fallback analysis - includes category to satisfy Zod schema
     return {
       domain: "General Maintenance",
+      category: "general", // Required for issue creation
       severity: "moderate",
       confidence: 0.5,
       reasoning:
