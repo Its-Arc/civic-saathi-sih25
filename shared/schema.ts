@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { CATEGORY_LIST, CategoryType } from "./categories";
 
 export const users = pgTable("users", {
   id: varchar("id")
@@ -29,7 +30,7 @@ export const maintenanceIssues = pgTable("maintenance_issues", {
     .default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  category: text("category").notNull(), // "plumbing", "electrical", "civil", etc.
+  category: text("category").notNull(), // One of the 8 approved categories from shared/categories.ts
   severity: text("severity").notNull(), // "critical", "high", "medium", "low"
   status: text("status").notNull().default("open"), // "open", "assigned", "in_progress", "resolved"
   progress: integer("progress").notNull().default(0), // 0-100
@@ -99,6 +100,11 @@ export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
 });
 
+// Zod schema for validating categories
+const categorySchema = z.enum(
+  CATEGORY_LIST as [CategoryType, ...CategoryType[]]
+);
+
 export const insertMaintenanceIssueSchema = createInsertSchema(
   maintenanceIssues
 )
@@ -111,10 +117,12 @@ export const insertMaintenanceIssueSchema = createInsertSchema(
     status: true,
   })
   .extend({
+    // Validate category against approved list
+    category: categorySchema,
     aiAnalysis: z
       .object({
         domain: z.string(),
-        category: z.string().optional(), // Category derived from domain for DB storage
+        category: categorySchema.optional(), // Category derived from domain for DB storage
         severity: z.string(),
         confidence: z.number(),
         reasoning: z.string(),

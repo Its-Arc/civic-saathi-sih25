@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { LocationDisplay } from "@/components/ui/location-display";
 import { MaintenanceIssue, User } from "@shared/schema";
+import { getCategoryColors } from "@shared/categories";
 import {
   ArrowUp,
   MessageCircle,
@@ -55,18 +56,8 @@ export function FeedPost({ issue, isMobile = false }: FeedPostProps) {
   };
 
   const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
-      case "road_maintenance":
-        return "bg-blue-100 text-blue-800";
-      case "electrical":
-        return "bg-yellow-100 text-yellow-800";
-      case "traffic_safety":
-        return "bg-red-100 text-red-800";
-      case "sanitation":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+    const colors = getCategoryColors(category);
+    return `${colors.bg} ${colors.text}`;
   };
 
   // Calculate progress stage based on status and progress
@@ -175,8 +166,8 @@ export function FeedPost({ issue, isMobile = false }: FeedPostProps) {
                           d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                         />
                       </svg>
-                      <LocationDisplay 
-                        location={issue.location} 
+                      <LocationDisplay
+                        location={issue.location}
                         className="font-medium truncate max-w-[140px]"
                       />
                     </div>
@@ -319,11 +310,11 @@ export function FeedPost({ issue, isMobile = false }: FeedPostProps) {
                       </h4>
                     </div>
                     <div className="flex-1 space-y-3 overflow-hidden flex flex-col">
-                      {/* Tags - Domain on first line */}
+                      {/* Tags - Category on first line (using standardized category) */}
                       <div className="flex flex-wrap gap-2">
-                        {issue.aiAnalysis?.domain && (
-                          <Badge className="bg-purple-200 text-purple-900 text-xs font-bold px-3 py-1.5">
-                            {issue.aiAnalysis.domain}
+                        {issue.category && (
+                          <Badge className={`${getCategoryColor(issue.category)} text-xs font-bold px-3 py-1.5`}>
+                            {issue.category}
                           </Badge>
                         )}
                       </div>

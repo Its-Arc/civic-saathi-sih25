@@ -8,6 +8,7 @@ import {
   type Comment,
   type InsertComment,
 } from "@shared/schema";
+import { CATEGORIES } from "@shared/categories";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -137,7 +138,7 @@ export class MemStorage implements IStorage {
         title: "Dangerous pothole causing vehicle damage on MG Road",
         description:
           "Large pothole near City Center junction causing multiple two-wheelers to suffer tire damage. Vehicles are swerving dangerously to avoid it, creating risk of accidents. The damaged road surface is deteriorating rapidly.",
-        category: "road_maintenance",
+        category: CATEGORIES.ROADS_TRANSPORT,
         severity: "critical",
         status: "in_progress",
         progress: 72,
@@ -161,7 +162,7 @@ export class MemStorage implements IStorage {
         title: "Malfunctioning streetlights creating safety hazards",
         description:
           "Multiple streetlights flickering and non-functional along pedestrian pathway. Area becomes dangerously dark after sunset, forcing residents to avoid this route. Women and senior citizens feel unsafe using this path in evenings.",
-        category: "electrical",
+        category: CATEGORIES.ELECTRICITY_LIGHTING,
         severity: "major",
         status: "assigned",
         progress: 35,
@@ -185,7 +186,7 @@ export class MemStorage implements IStorage {
         title: "Damaged traffic sign at school zone crossing",
         description:
           "Stop sign bent and barely visible at school pedestrian crossing. Hundreds of children use this crossing daily. Damaged signage fails to warn drivers properly, creating extreme danger for students crossing the road.",
-        category: "traffic_safety",
+        category: CATEGORIES.PUBLIC_SAFETY,
         severity: "critical",
         status: "open",
         progress: 8,
@@ -209,7 +210,7 @@ export class MemStorage implements IStorage {
         title: "Overflowing trash bins attracting pests in park",
         description:
           "Park waste bins overflowing with garbage around children's play area. Attracting stray animals and insects, creating unhygienic conditions. Foul smell is unbearable during afternoons, discouraging families from using the park.",
-        category: "sanitation",
+        category: CATEGORIES.SANITATION_WASTE,
         severity: "moderate",
         status: "open",
         progress: 5,

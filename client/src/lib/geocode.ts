@@ -136,7 +136,7 @@ export async function reverseGeocodeLocation(
   lon: number
 ): Promise<string | null> {
   const cacheKey = `${lat.toFixed(6)},${lon.toFixed(6)}`;
-  
+
   // Check cache first
   if (reverseGeocodeCache.has(cacheKey)) {
     return reverseGeocodeCache.get(cacheKey)!;
@@ -144,7 +144,9 @@ export async function reverseGeocodeLocation(
 
   try {
     const response = await fetch(
-      `/api/reverse-geocode?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`,
+      `/api/reverse-geocode?lat=${encodeURIComponent(
+        lat
+      )}&lon=${encodeURIComponent(lon)}`,
       {
         headers: {
           Accept: "application/json",
@@ -163,21 +165,24 @@ export async function reverseGeocodeLocation(
       // Build a concise, readable address
       const addr = data.address;
       const parts: string[] = [];
-      
+
       // Prioritize locality/neighborhood/suburb for shorter addresses
       if (addr.neighbourhood) parts.push(addr.neighbourhood);
       else if (addr.suburb) parts.push(addr.suburb);
       else if (addr.locality) parts.push(addr.locality);
       else if (addr.road) parts.push(addr.road);
-      
+
       // Add city/town
       if (addr.city) parts.push(addr.city);
       else if (addr.town) parts.push(addr.town);
       else if (addr.village) parts.push(addr.village);
       else if (addr.state_district) parts.push(addr.state_district);
-      
-      const formattedAddress = parts.length > 0 ? parts.join(", ") : data.display_name?.split(",").slice(0, 2).join(",") || null;
-      
+
+      const formattedAddress =
+        parts.length > 0
+          ? parts.join(", ")
+          : data.display_name?.split(",").slice(0, 2).join(",") || null;
+
       if (formattedAddress) {
         reverseGeocodeCache.set(cacheKey, formattedAddress);
         return formattedAddress;

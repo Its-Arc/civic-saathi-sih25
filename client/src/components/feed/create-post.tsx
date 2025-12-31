@@ -78,7 +78,7 @@ export function CreatePost() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        
+
         // Try to reverse geocode to get a readable address
         try {
           const address = await reverseGeocodeLocation(latitude, longitude);
@@ -93,7 +93,8 @@ export function CreatePost() {
             setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
             toast({
               title: "Location detected",
-              description: "GPS coordinates captured (address lookup unavailable).",
+              description:
+                "GPS coordinates captured (address lookup unavailable).",
             });
           }
         } catch (error) {
@@ -104,7 +105,7 @@ export function CreatePost() {
             description: "GPS coordinates captured.",
           });
         }
-        
+
         setIsGettingLocation(false);
       },
       (error) => {
@@ -245,12 +246,10 @@ export function CreatePost() {
   if (!user) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Task 2: Updated main prompt text */}
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
-          Report an Issue
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">Report an Issue</h2>
         {/* <p className="text-gray-600">
           Describe the civic issue you encountered
         </p> */}
@@ -261,7 +260,7 @@ export function CreatePost() {
         {/* Task 3 & 4: Description field with red asterisk and updated placeholder */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-base font-semibold text-gray-800">
               Description <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-2">
@@ -303,14 +302,14 @@ export function CreatePost() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the civic issue (or use Speak to transcribe)"
             required
-            className="resize-none border-gray-300 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 min-h-[100px]"
-            rows={4}
+            className="resize-none border-gray-300 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 min-h-[90px]"
+            rows={3}
           />
         </div>
 
         {/* Task 5: Location Section with two options (manual input OR GPS) */}
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">
+        <div className="space-y-2.5">
+          <label className="text-base font-semibold text-gray-800">
             Location <span className="text-red-500">*</span>
           </label>
 
@@ -328,7 +327,7 @@ export function CreatePost() {
           </div>
 
           {/* Separator */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="flex-1 border-t border-gray-200"></div>
             <span className="text-xs text-gray-400 uppercase">or</span>
             <div className="flex-1 border-t border-gray-200"></div>
@@ -358,10 +357,10 @@ export function CreatePost() {
 
         {/* Task 3 & 6: Photo Upload Section with red asterisk and updated helper text */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-base font-semibold text-gray-800">
             Photo(s) <span className="text-red-500">*</span>
           </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-5 text-center hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
             <input
               type="file"
               multiple
@@ -371,7 +370,7 @@ export function CreatePost() {
               id="image-upload"
             />
             <label htmlFor="image-upload" className="cursor-pointer block">
-              <CloudUpload className="mx-auto text-gray-400 mb-3" size={28} />
+              <CloudUpload className="mx-auto text-gray-400 mb-2" size={28} />
               <p className="text-gray-600 font-medium">
                 Upload 1 or more images of the issue
               </p>
@@ -381,7 +380,7 @@ export function CreatePost() {
             </label>
 
             {images.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2 justify-center">
+              <div className="mt-3 flex flex-wrap gap-2 justify-center">
                 {images.map((image, index) => (
                   <Badge
                     key={index}
@@ -453,9 +452,9 @@ export function CreatePost() {
         )}
 
         {/* Task 7 & 8: Action Buttons - centered AI section with helper text */}
-        <div className="flex flex-col items-center pt-4 border-t border-gray-200 space-y-4">
+        <div className="flex flex-col items-center pt-3 space-y-2">
           {!analysis ? (
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-1">
               <Button
                 onClick={performAnalysis}
                 disabled={!description.trim() || isAnalyzing}

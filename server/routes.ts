@@ -252,14 +252,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const lat = req.query.lat as string;
       const lon = req.query.lon as string;
-      
+
       if (!lat || !lon) {
         return res
           .status(400)
           .json({ message: "Query parameters 'lat' and 'lon' are required" });
       }
 
-      const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=18&addressdetails=1`;
+      const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${encodeURIComponent(
+        lat
+      )}&lon=${encodeURIComponent(lon)}&zoom=18&addressdetails=1`;
 
       const response = await fetch(nominatimUrl, {
         headers: {

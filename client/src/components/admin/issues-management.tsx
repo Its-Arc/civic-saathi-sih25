@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { MaintenanceIssue, User } from "@shared/schema";
+import { getCategoryColors } from "@shared/categories";
 import { Edit, Eye, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -125,7 +126,13 @@ export function IssuesManagement({ issues }: IssuesManagementProps) {
                     <span>
                       Reporter: {issue.reporter?.username || "Unknown Reporter"}
                     </span>
-                    <span>Category: {issue.category}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full ${
+                        getCategoryColors(issue.category).bg
+                      } ${getCategoryColors(issue.category).text}`}
+                    >
+                      {issue.category}
+                    </span>
                     {issue.location && <span>Location: {issue.location}</span>}
                   </div>
                 </div>

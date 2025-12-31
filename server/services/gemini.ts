@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { mapDomainToCategory, CategoryType } from "../../shared/categories";
 
 const apiKey = process.env.GEMINI_API_KEY || "";
 console.log(
@@ -10,52 +11,14 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 /**
  * AIAnalysis includes both `domain` (human-readable) and `category` (for DB storage).
- * The `category` field is derived from the domain to satisfy Zod schema requirements.
+ * The `category` field is derived from the domain using the centralized category mapping.
  */
 export interface AIAnalysis {
   domain: string;
-  category: string; // Required for issue creation - derived from domain
+  category: CategoryType; // Required for issue creation - one of the 8 approved categories
   severity: string;
   confidence: number;
   reasoning: string;
-}
-
-/**
- * Derives a DB-compatible category from a human-readable domain string.
- * This ensures Zod validation passes even when AI falls back.
- */
-function deriveCategoryFromDomain(domain: string): string {
-  const d = domain.toLowerCase();
-  if (
-    d.includes("road") ||
-    d.includes("infrastructure") ||
-    d.includes("pothole")
-  ) {
-    return "road_maintenance";
-  }
-  if (d.includes("electric") || d.includes("power") || d.includes("light")) {
-    return "electrical";
-  }
-  if (d.includes("traffic") || d.includes("sign") || d.includes("signal")) {
-    return "traffic_safety";
-  }
-  if (
-    d.includes("waste") ||
-    d.includes("garbage") ||
-    d.includes("sanitation") ||
-    d.includes("trash")
-  ) {
-    return "sanitation";
-  }
-  if (
-    d.includes("plumb") ||
-    d.includes("water") ||
-    d.includes("pipe") ||
-    d.includes("leak")
-  ) {
-    return "plumbing";
-  }
-  return "general"; // Fallback category
 }
 
 export async function analyzeMaintenanceIssue(
@@ -151,9 +114,9 @@ Respond with valid JSON only:
       throw new Error("Invalid analysis format");
     }
 
-    // Derive category from domain if AI didn't provide it
+    // Derive category from domain using centralized mapping
     if (!analysis.category) {
-      analysis.category = deriveCategoryFromDomain(analysis.domain);
+      analysis.category = mapDomainToCategory(analysis.domain);
     }
 
     return analysis;
@@ -243,7 +206,7 @@ function fallbackAnalysis(description: string): AIAnalysis {
 
   return {
     domain,
-    category: deriveCategoryFromDomain(domain), // Derive category to satisfy Zod schema
+    category: mapDomainToCategory(domain), // Use centralized category mapping
     severity,
     confidence: 0.6,
     reasoning:

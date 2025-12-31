@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MaintenanceIssue, User, Technician } from "@shared/schema";
+import { CATEGORIES, getCategoryColors } from "@shared/categories";
 import { formatDistanceToNow } from "date-fns";
 import {
   Building2,
@@ -345,98 +346,65 @@ export default function AdminDashboardPage() {
           {(() => {
             try {
               // Define departments and matching keywords
+              // 8 standard categories matching shared/categories.ts
               const departments = [
                 {
-                  key: "roads",
-                  name: "Roads & Infrastructure",
-                  desc: "Handles construction, repair, and upkeep of roads and public infrastructure. Ensures safe commuting and smooth connectivity.",
-                  keywords: [
-                    "road",
-                    "infrastructure",
-                    "pothole",
-                    "bridge",
-                    "sidewalk",
-                    "footpath",
-                  ],
+                  key: CATEGORIES.ROADS_TRANSPORT,
+                  name: CATEGORIES.ROADS_TRANSPORT,
+                  desc: "Handles potholes, traffic signals, road damage, highways, streets, and transport-related infrastructure.",
                 },
                 {
-                  key: "sewage",
-                  name: "Sewage & Drainage",
-                  desc: "Responsible for managing sewage systems and stormwater drainage. Works to prevent flooding and maintain sanitation.",
-                  keywords: [
-                    "sewage",
-                    "drain",
-                    "drainage",
-                    "stormwater",
-                    "sewer",
-                  ],
+                  key: CATEGORIES.WATER_DRAINAGE,
+                  name: CATEGORIES.WATER_DRAINAGE,
+                  desc: "Responsible for water pipelines, drainage systems, sewage, leaks, and flood prevention.",
                 },
                 {
-                  key: "lights",
-                  name: "Street Lights",
-                  desc: "Oversees installation and maintenance of street lights. Ensures well-lit streets for public safety during night hours.",
-                  keywords: [
-                    "street light",
-                    "streetlight",
-                    "lamp",
-                    "lighting",
-                    "pole light",
-                  ],
+                  key: CATEGORIES.SANITATION_WASTE,
+                  name: CATEGORIES.SANITATION_WASTE,
+                  desc: "Manages garbage collection, trash bins, waste disposal, and urban cleanliness.",
                 },
                 {
-                  key: "garbage",
-                  name: "Garbage & Sanitation",
-                  desc: "Manages solid waste collection and disposal. Maintains cleanliness and promotes hygienic urban living.",
-                  keywords: [
-                    "garbage",
-                    "trash",
-                    "waste",
-                    "sanitation",
-                    "cleanliness",
-                    "dump",
-                  ],
+                  key: CATEGORIES.ELECTRICITY_LIGHTING,
+                  name: CATEGORIES.ELECTRICITY_LIGHTING,
+                  desc: "Oversees streetlights, power outages, electrical wiring, and lighting infrastructure.",
                 },
                 {
-                  key: "water",
-                  name: "Water Supply",
-                  desc: "Ensures safe and adequate drinking water distribution. Handles water pipelines, supply issues, and leak repairs.",
-                  keywords: ["water", "pipeline", "leak", "tap", "drinking"],
+                  key: CATEGORIES.PUBLIC_SAFETY,
+                  name: CATEGORIES.PUBLIC_SAFETY,
+                  desc: "Addresses safety hazards, damaged signs, dangerous conditions, and emergency situations.",
                 },
                 {
-                  key: "electrical",
-                  name: "Electrical Department",
-                  desc: "Maintains civic electrical infrastructure. Addresses outages, wiring faults, and ensures uninterrupted public services.",
-                  keywords: [
-                    "electrical",
-                    "power",
-                    "wire",
-                    "transformer",
-                    "outage",
-                  ],
+                  key: CATEGORIES.BUILDINGS_INFRASTRUCTURE,
+                  name: CATEGORIES.BUILDINGS_INFRASTRUCTURE,
+                  desc: "Handles public buildings, bridges, facilities, and structural maintenance issues.",
+                },
+                {
+                  key: CATEGORIES.ENVIRONMENT_POLLUTION,
+                  name: CATEGORIES.ENVIRONMENT_POLLUTION,
+                  desc: "Manages parks, trees, air quality, noise pollution, and environmental concerns.",
+                },
+                {
+                  key: CATEGORIES.MISCELLANEOUS,
+                  name: CATEGORIES.MISCELLANEOUS,
+                  desc: "Other civic issues that don't fit into specific categories.",
                 },
               ] as const;
 
-              const matchIssue = (issue: any, keywords: string[]) => {
-                const text = (
-                  (issue.category || "") +
-                  " " +
-                  (issue.title || "") +
-                  " " +
-                  (issue.description || "")
-                ).toLowerCase();
-                return keywords.some((k) => text.includes(k));
-              };
-
               return (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {departments.map((dept) => {
-                    const deptIssues = (issues || []).filter((i) =>
-                      matchIssue(i, dept.keywords)
+                    // Filter issues by exact category match
+                    const deptIssues = (issues || []).filter(
+                      (i) => i.category === dept.key
                     );
+                    const colors = getCategoryColors(dept.key);
                     return (
                       <Card key={dept.key} className="admin-card hover-lift">
                         <CardHeader>
-                          <CardTitle className="text-base sm:text-lg">
+                          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                            <span
+                              className={`w-3 h-3 rounded-full ${colors.bg}`}
+                            />
                             {dept.name}
                           </CardTitle>
                           <p className="text-sm text-gray-600 mt-1">
@@ -506,18 +474,10 @@ export default function AdminDashboardPage() {
           })()}
         </TabsContent>
 
-        {/* Technicians Tab (department grouped) */}
+        {/* Technicians Tab (department grouped by 8 categories) */}
         <TabsContent value="technicians" className="space-y-6 animate-fade-in">
           {(() => {
-            const deptMap: Record<string, string[]> = {
-              roads: ["road", "bridge", "pothole", "infrastructure"],
-              sewage: ["sewage", "drain", "drainage", "stormwater"],
-              lights: ["light", "streetlight", "lamp"],
-              garbage: ["garbage", "sanitation", "waste", "clean"],
-              water: ["water", "pipeline", "leak"],
-              electrical: ["electrical", "power", "wire", "transformer"],
-            };
-
+            // Fallback technicians for each of the 8 categories
             const fallbackTechs: Record<
               string,
               {
@@ -527,7 +487,7 @@ export default function AdminDashboardPage() {
                 email: string;
               }[]
             > = {
-              roads: [
+              [CATEGORIES.ROADS_TRANSPORT]: [
                 {
                   name: "Rajiv Kumar",
                   phone: "+91-98123-45678",
@@ -540,14 +500,8 @@ export default function AdminDashboardPage() {
                   designation: "Supervisor",
                   email: "anita.sharma@municipal.gov.in",
                 },
-                {
-                  name: "Deepak Gupta",
-                  phone: "+91-98970-11223",
-                  designation: "Field Technician",
-                  email: "deepak.gupta@municipal.gov.in",
-                },
               ],
-              sewage: [
+              [CATEGORIES.WATER_DRAINAGE]: [
                 {
                   name: "Vikram Singh",
                   phone: "+91-98900-11223",
@@ -555,27 +509,13 @@ export default function AdminDashboardPage() {
                   email: "vikram.singh@municipal.gov.in",
                 },
                 {
-                  name: "Rachna Pandey",
-                  phone: "+91-98110-33445",
-                  designation: "Supervisor",
-                  email: "rachna.pandey@municipal.gov.in",
+                  name: "Pooja Mishra",
+                  phone: "+91-98987-65432",
+                  designation: "Junior Engineer",
+                  email: "pooja.mishra@municipal.gov.in",
                 },
               ],
-              lights: [
-                {
-                  name: "Neha Verma",
-                  phone: "+91-98223-34455",
-                  designation: "Senior Officer",
-                  email: "neha.verma@municipal.gov.in",
-                },
-                {
-                  name: "Manish Bhatia",
-                  phone: "+91-98122-55667",
-                  designation: "Field Technician",
-                  email: "manish.bhatia@municipal.gov.in",
-                },
-              ],
-              garbage: [
+              [CATEGORIES.SANITATION_WASTE]: [
                 {
                   name: "Amit Chauhan",
                   phone: "+91-98111-12233",
@@ -589,12 +529,40 @@ export default function AdminDashboardPage() {
                   email: "sunita.arora@municipal.gov.in",
                 },
               ],
-              water: [
+              [CATEGORIES.ELECTRICITY_LIGHTING]: [
                 {
-                  name: "Pooja Mishra",
-                  phone: "+91-98987-65432",
-                  designation: "Junior Engineer",
-                  email: "pooja.mishra@municipal.gov.in",
+                  name: "Neha Verma",
+                  phone: "+91-98223-34455",
+                  designation: "Senior Officer",
+                  email: "neha.verma@municipal.gov.in",
+                },
+                {
+                  name: "Sandeep Yadav",
+                  phone: "+91-98765-43210",
+                  designation: "Field Technician",
+                  email: "sandeep.yadav@municipal.gov.in",
+                },
+              ],
+              [CATEGORIES.PUBLIC_SAFETY]: [
+                {
+                  name: "Rohit Khanna",
+                  phone: "+91-98990-22334",
+                  designation: "Safety Officer",
+                  email: "rohit.khanna@municipal.gov.in",
+                },
+                {
+                  name: "Priya Mehta",
+                  phone: "+91-98122-55667",
+                  designation: "Field Inspector",
+                  email: "priya.mehta@municipal.gov.in",
+                },
+              ],
+              [CATEGORIES.BUILDINGS_INFRASTRUCTURE]: [
+                {
+                  name: "Deepak Gupta",
+                  phone: "+91-98970-11223",
+                  designation: "Civil Engineer",
+                  email: "deepak.gupta@municipal.gov.in",
                 },
                 {
                   name: "Harish Tiwari",
@@ -603,60 +571,47 @@ export default function AdminDashboardPage() {
                   email: "harish.tiwari@municipal.gov.in",
                 },
               ],
-              electrical: [
+              [CATEGORIES.ENVIRONMENT_POLLUTION]: [
                 {
-                  name: "Sandeep Yadav",
-                  phone: "+91-98765-43210",
-                  designation: "Field Technician",
-                  email: "sandeep.yadav@municipal.gov.in",
+                  name: "Rachna Pandey",
+                  phone: "+91-98110-33445",
+                  designation: "Environment Officer",
+                  email: "rachna.pandey@municipal.gov.in",
                 },
                 {
-                  name: "Rohit Khanna",
-                  phone: "+91-98990-22334",
-                  designation: "Senior Officer",
-                  email: "rohit.khanna@municipal.gov.in",
+                  name: "Manish Bhatia",
+                  phone: "+91-98122-55667",
+                  designation: "Horticulture Supervisor",
+                  email: "manish.bhatia@municipal.gov.in",
+                },
+              ],
+              [CATEGORIES.MISCELLANEOUS]: [
+                {
+                  name: "Arun Patel",
+                  phone: "+91-98333-44556",
+                  designation: "General Technician",
+                  email: "arun.patel@municipal.gov.in",
                 },
               ],
             };
 
-            const groups = Object.keys(deptMap).map((k) => ({
-              key: k,
-              techs: [] as any[],
-            }));
-
-            (Array.isArray(technicians) ? technicians : []).forEach(
-              (t: any) => {
-                const s = String(t?.specialty ?? "").toLowerCase();
-                const matchedKey = Object.entries(deptMap).find(([_, kws]) =>
-                  kws.some((kw) => s.includes(kw))
-                )?.[0];
-                if (matchedKey) {
-                  const gObj = groups.find((g) => g.key === matchedKey);
-                  if (gObj) gObj.techs.push(t);
-                }
-              }
-            );
+            // Create groups for each of the 8 categories
+            const categoryList = Object.values(CATEGORIES);
 
             return (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {groups.map((g) => {
-                  const human = fallbackTechs[g.key] ?? [];
-                  const list =
-                    Array.isArray(g.techs) && g.techs.length > 0
-                      ? g.techs
-                      : human;
-                  const titleMap: Record<string, string> = {
-                    roads: "Roads & Infrastructure",
-                    sewage: "Sewage & Drainage",
-                    lights: "Street Lights",
-                    garbage: "Garbage & Sanitation",
-                    water: "Water Supply",
-                    electrical: "Electrical Department",
-                  };
+                {categoryList.map((categoryName) => {
+                  const list = fallbackTechs[categoryName] ?? [];
+                  const colors = getCategoryColors(categoryName);
                   return (
-                    <Card key={g.key} className="admin-card hover-lift">
+                    <Card key={categoryName} className="admin-card hover-lift">
                       <CardHeader>
-                        <CardTitle>{titleMap[g.key]}</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <span
+                            className={`w-3 h-3 rounded-full ${colors.bg}`}
+                          />
+                          {categoryName}
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         {!Array.isArray(list) || list.length === 0 ? (
@@ -674,27 +629,21 @@ export default function AdminDashboardPage() {
                                   <h4 className="font-medium text-gray-900">
                                     {t.name}
                                   </h4>
-                                  <Badge className="capitalize bg-blue-100 text-blue-800">
-                                    {t.designation || t.role || "Technician"}
+                                  <Badge className="capitalize bg-blue-100 text-blue-800 text-xs">
+                                    {t.designation || "Technician"}
                                   </Badge>
                                 </div>
                                 <div className="text-sm text-gray-700 space-y-1">
                                   <div className="flex items-center gap-2">
-                                    <Phone size={14} />{" "}
-                                    <span>{t.phone || "+91-98XXXXXXXX"}</span>
+                                    <Phone size={14} />
+                                    <span>{t.phone}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Mail size={14} />{" "}
-                                    <span className="text-blue-600">
-                                      {t.email || "contact@municipal.gov.in"}
+                                    <Mail size={14} />
+                                    <span className="text-blue-600 text-xs">
+                                      {t.email}
                                     </span>
                                   </div>
-                                  {t.specialty && (
-                                    <div className="flex items-center gap-2 text-gray-600">
-                                      <Users size={14} />{" "}
-                                      <span>{t.specialty}</span>
-                                    </div>
-                                  )}
                                 </div>
                               </div>
                             ))}

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LocationDisplay } from "@/components/ui/location-display";
 import { MaintenanceIssue, User, Technician } from "@shared/schema";
+import { getCategoryColors } from "@shared/categories";
 import { formatDistanceToNow, format } from "date-fns";
 import {
   MapPin,
@@ -364,8 +365,12 @@ export default function MyReportsPage() {
 
                   {/* Category - Severity */}
                   <div className="bg-gray-50 rounded-full px-4 py-2 flex items-center justify-center gap-3">
-                    <span className="text-gray-700 text-sm font-medium capitalize">
-                      {issue.category.replace("_", " ")}
+                    <span
+                      className={`text-sm font-medium ${
+                        getCategoryColors(issue.category).text
+                      }`}
+                    >
+                      {issue.category}
                     </span>
                     <span className="text-gray-300">•</span>
                     <span
@@ -392,7 +397,7 @@ export default function MyReportsPage() {
                     {issue.location && (
                       <span className="flex items-center gap-1.5">
                         <MapPin size={14} className="text-gray-500" />
-                        <LocationDisplay 
+                        <LocationDisplay
                           location={issue.location}
                           className="truncate max-w-[150px] font-medium"
                         />
