@@ -1,7 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = process.env.GEMINI_API_KEY || "";
-console.log(`[Gemini] API Key loaded: ${apiKey ? apiKey.substring(0, 10) + "..." : "MISSING"}`);
+console.log(
+  `[Gemini] API Key loaded: ${
+    apiKey ? apiKey.substring(0, 10) + "..." : "MISSING"
+  }`
+);
 const genAI = new GoogleGenerativeAI(apiKey);
 
 /**
