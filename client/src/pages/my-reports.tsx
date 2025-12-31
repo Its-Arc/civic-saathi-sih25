@@ -5,8 +5,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LocationDisplay } from "@/components/ui/location-display";
 import { MaintenanceIssue, User, Technician } from "@shared/schema";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import {
   MapPin,
   Calendar,
@@ -17,6 +18,12 @@ import {
   TrendingUp,
   BarChart3,
   FileText,
+  Bot,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  ChevronRight,
+  PlusCircle,
 } from "lucide-react";
 
 export default function MyReportsPage() {
@@ -45,10 +52,12 @@ export default function MyReportsPage() {
 
   if (!user) {
     return (
-      <div className="container-centered section-spacing">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="heading-primary">Access Denied</h1>
-          <p className="text-muted mt-3">Please log in to view your reports.</p>
+      <div className="min-h-screen pt-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center py-12">
+          <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
+          <p className="text-gray-600 mt-3">
+            Please log in to view your reports.
+          </p>
         </div>
       </div>
     );
@@ -56,10 +65,10 @@ export default function MyReportsPage() {
 
   if (isError) {
     return (
-      <div className="container-centered section-spacing">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="heading-primary">My Reports</h1>
-          <p className="text-muted mt-3">
+      <div className="min-h-screen pt-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center py-12">
+          <h1 className="text-2xl font-bold text-gray-900">My Reports</h1>
+          <p className="text-gray-600 mt-3">
             Unable to load your reports right now.
           </p>
         </div>
@@ -69,17 +78,41 @@ export default function MyReportsPage() {
 
   if (isLoading) {
     return (
-      <div className="container-centered section-spacing">
+      <div className="min-h-screen pt-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <Skeleton className="h-8 w-64 mb-6" />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full" />
+          {/* Loading skeleton header */}
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-48 mb-6" />
+
+          {/* Stats skeleton */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-28 w-full rounded-xl" />
             ))}
           </div>
+
+          {/* Profile card skeleton */}
+          <Skeleton className="h-24 w-full rounded-xl mb-8" />
+
+          {/* Report cards skeleton - improved placeholder UI */}
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-64 w-full" />
+              <div
+                key={i}
+                className="bg-white rounded-xl border border-gray-100 p-5"
+              >
+                <div className="flex items-start gap-4">
+                  <Skeleton className="h-12 w-12 rounded-lg flex-shrink-0" />
+                  <div className="flex-1 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-5 w-20 rounded-full" />
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                    </div>
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -87,33 +120,77 @@ export default function MyReportsPage() {
     );
   }
 
+  // Severity color helper - uses subtle, meaningful colors
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
       case "critical":
-        return "bg-red-600 text-white";
+        return "bg-red-100 text-red-700 border-red-200";
       case "major":
-        return "bg-red-400 text-white";
+      case "high":
+        return "bg-orange-100 text-orange-700 border-orange-200";
       case "moderate":
-        return "bg-orange-500 text-white";
+      case "medium":
+        return "bg-amber-100 text-amber-700 border-amber-200";
       case "minor":
-        return "bg-yellow-400 text-gray-900";
+      case "low":
+        return "bg-green-100 text-green-700 border-green-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
 
-  const getStatusColor = (status: string) => {
+  // Severity indicator dot color - for visual quick-scan
+  const getSeverityDotColor = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case "critical":
+        return "bg-red-500";
+      case "major":
+      case "high":
+        return "bg-orange-500";
+      case "moderate":
+      case "medium":
+        return "bg-amber-500";
+      case "minor":
+      case "low":
+        return "bg-green-500";
+      default:
+        return "bg-gray-400";
+    }
+  };
+
+  // Status color and icon mapping
+  const getStatusInfo = (status: string) => {
     switch (status) {
       case "resolved":
-        return "bg-green-100 text-green-800";
+        return {
+          color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          label: "Resolved",
+          icon: CheckCircle2,
+        };
       case "in_progress":
-        return "bg-blue-100 text-blue-800";
+        return {
+          color: "bg-blue-50 text-blue-700 border-blue-200",
+          label: "In Progress",
+          icon: Loader2,
+        };
       case "assigned":
-        return "bg-purple-100 text-purple-800";
+        return {
+          color: "bg-purple-50 text-purple-700 border-purple-200",
+          label: "Assigned",
+          icon: UserIcon,
+        };
       case "open":
-        return "bg-gray-100 text-gray-800";
+        return {
+          color: "bg-gray-50 text-gray-600 border-gray-200",
+          label: "Submitted",
+          icon: AlertCircle,
+        };
       default:
-        return "bg-gray-100 text-gray-800";
+        return {
+          color: "bg-gray-50 text-gray-600 border-gray-200",
+          label: status.replace("_", " "),
+          icon: AlertCircle,
+        };
     }
   };
 
@@ -135,273 +212,300 @@ export default function MyReportsPage() {
     : null;
 
   return (
-    <div className="container-centered section-spacing">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="heading-primary flex items-center space-x-3">
-            <FileText className="text-gray-700" size={32} />
-            <span>My Reports</span>
-          </h1>
-          <p className="text-muted mt-3">
-            Track your maintenance requests and their progress
-          </p>
-        </div>
+    <div className="h-screen overflow-y-auto snap-y snap-mandatory bg-gray-50">
+      {/* 
+        SECTION A: Stats Frame
+        - Full viewport height section
+        - Contains title, stats cards, and profile info
+        - pt-14 accounts for fixed header height (h-12 = 48px ≈ 3.5rem)
+      */}
+      <section className="h-screen pt-14 pb-6 px-4 sm:px-6 lg:px-8 flex flex-col snap-start snap-always">
+        <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+          {/* Header - compact, no excess margin */}
+          <div className="mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <FileText className="text-gray-700" size={28} />
+              <span>My Reports</span>
+            </h1>
+            <p className="text-gray-600 text-sm mt-1">
+              Track your maintenance requests and their progress
+            </p>
+          </div>
 
-        {/* Statistics Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Reports
-              </CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalReports}</div>
-              <p className="text-xs text-muted-foreground">
-                All time submissions
-              </p>
-            </CardContent>
-          </Card>
+          {/* Statistics Cards - compact grid */}
+          <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 mb-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
+                <CardTitle className="text-xs font-medium">
+                  Total Reports
+                </CardTitle>
+                <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-3 px-4">
+                <div className="text-xl font-bold">{totalReports}</div>
+                <p className="text-xs text-muted-foreground">All time</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {resolvedReports}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {totalReports > 0
-                  ? Math.round((resolvedReports / totalReports) * 100)
-                  : 0}
-                % completion rate
-              </p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
+                <CardTitle className="text-xs font-medium">Resolved</CardTitle>
+                <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-3 px-4">
+                <div className="text-xl font-bold text-green-600">
+                  {resolvedReports}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {totalReports > 0
+                    ? Math.round((resolvedReports / totalReports) * 100)
+                    : 0}
+                  % done
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                {inProgressReports}
-              </div>
-              <p className="text-xs text-muted-foreground">Active issues</p>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
+                <CardTitle className="text-xs font-medium">
+                  In Progress
+                </CardTitle>
+                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-3 px-4">
+                <div className="text-xl font-bold text-blue-600">
+                  {inProgressReports}
+                </div>
+                <p className="text-xs text-muted-foreground">Active</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Avg Progress
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{avgProgress}%</div>
-              <p className="text-xs text-muted-foreground">
-                Average completion
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-4">
+                <CardTitle className="text-xs font-medium">
+                  Avg Progress
+                </CardTitle>
+                <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pb-3 px-4">
+                <div className="text-xl font-bold">{avgProgress}%</div>
+                <p className="text-xs text-muted-foreground">Completion</p>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* User Credibility Score */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <UserIcon size={20} />
-              <span>Your Profile</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-gray-600">Credibility Score</p>
-                <div className="flex items-center space-x-2 mt-1">
-                  <div className="text-2xl font-bold text-emerald-600">
-                    {user.credibilityScore}/10
+          {/* User Credibility Score - compact */}
+          <Card className="mb-4">
+            <CardContent className="py-3 px-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-gray-800 rounded-full flex items-center justify-center">
+                    <UserIcon size={18} className="text-white" />
                   </div>
-                  <Badge className="bg-emerald-100 text-emerald-800">
-                    {user.credibilityScore >= 8
-                      ? "Excellent"
-                      : user.credibilityScore >= 6
-                      ? "Good"
-                      : user.credibilityScore >= 4
-                      ? "Fair"
-                      : "Needs Improvement"}
-                  </Badge>
+                  <div>
+                    <p className="text-xs text-gray-500">Credibility Score</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold text-emerald-600">
+                        {user.credibilityScore}/10
+                      </span>
+                      <Badge className="bg-emerald-100 text-emerald-800 text-xs">
+                        {user.credibilityScore >= 8
+                          ? "Excellent"
+                          : user.credibilityScore >= 6
+                          ? "Good"
+                          : user.credibilityScore >= 4
+                          ? "Fair"
+                          : "Needs Improvement"}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Member Since</p>
+                  <p className="text-sm font-medium">{memberSince ?? "—"}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Member Since</p>
-                <p className="font-medium">{memberSince ?? "—"}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Reports List */}
-        <div className="space-y-6">
-          {myIssues?.map((issue) => {
-            const assignedTech = technicians?.find(
-              (t) => t.id === issue.assignedTechnicianId
-            );
+          {/* Scroll indicator - hints that reports are below */}
+          <div className="text-center text-gray-400 text-xs mt-auto pb-4 animate-bounce">
+            <span>↓ Scroll for reports</span>
+          </div>
+        </div>
+      </section>
 
-            return (
-              <Card key={issue.id} className="overflow-hidden">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">
-                        {issue.title}
-                      </CardTitle>
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <Badge className={getSeverityColor(issue.severity)}>
-                          {issue.severity.toUpperCase()}
-                        </Badge>
-                        <Badge className={getStatusColor(issue.status)}>
-                          {issue.status.replace("_", " ").toUpperCase()}
-                        </Badge>
-                        {issue.location && (
-                          <div className="flex items-center space-x-1 text-sm text-gray-600">
-                            <MapPin size={14} />
-                            <span>{issue.location}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-1 text-sm text-gray-500">
-                        <Calendar size={14} />
-                        <span>
-                          Reported{" "}
-                          {formatDistanceToNow(new Date(issue.createdAt!), {
-                            addSuffix: true,
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-600 mb-1">Progress</div>
-                      <div className="text-xl font-bold">{issue.progress}%</div>
-                    </div>
-                  </div>
-                </CardHeader>
+      {/* 
+        SECTION B: Reports Feed
+        - Each report is a snap-start section taking full viewport
+        - No nested scroll container - snapping is handled by parent
+      */}
 
-                <CardContent>
-                  <p className="text-gray-700 mb-4">{issue.description}</p>
+      {myIssues?.map((issue) => {
+        const statusInfo = getStatusInfo(issue.status);
+        const StatusIcon = statusInfo.icon;
+        const assignedTech = technicians?.find(
+          (t) => t.id === issue.assignedTechnicianId
+        );
 
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-gray-700 to-gray-800 rounded-full transition-all duration-500"
-                        style={{ width: `${issue.progress}%` }}
+        return (
+          <section
+            key={issue.id}
+            className="h-screen pt-14 pb-4 px-4 sm:px-6 lg:px-8 snap-start snap-always"
+          >
+            <div className="max-w-4xl mx-auto w-full h-full py-2">
+              <Card className="w-full h-full flex flex-col overflow-hidden border-gray-200">
+                {/* TOP 50%: Info Section - symmetric spacing */}
+                <div className="h-1/2 flex flex-col justify-center gap-3 px-5 py-4">
+                  {/* Caption - concise issue description (no pill) */}
+                  <h3 className="font-semibold text-gray-900 text-lg leading-snug line-clamp-2 text-center px-2">
+                    {issue.title}
+                  </h3>
+
+                  {/* Category - Severity */}
+                  <div className="bg-gray-50 rounded-full px-4 py-2 flex items-center justify-center gap-3">
+                    <span className="text-gray-700 text-sm font-medium capitalize">
+                      {issue.category.replace("_", " ")}
+                    </span>
+                    <span className="text-gray-300">•</span>
+                    <span
+                      className={`flex items-center gap-1.5 text-sm font-medium capitalize ${
+                        issue.severity === "critical"
+                          ? "text-red-600"
+                          : issue.severity === "high" ||
+                            issue.severity === "major"
+                          ? "text-orange-600"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full ${getSeverityDotColor(
+                          issue.severity
+                        )}`}
                       />
-                    </div>
+                      {issue.severity}
+                    </span>
+                  </div>
+
+                  {/* Location - Time */}
+                  <div className="bg-gray-50 rounded-full px-4 py-2 flex items-center justify-center gap-3 text-sm text-gray-700">
+                    {issue.location && (
+                      <span className="flex items-center gap-1.5">
+                        <MapPin size={14} className="text-gray-500" />
+                        <LocationDisplay 
+                          location={issue.location}
+                          className="truncate max-w-[150px] font-medium"
+                        />
+                      </span>
+                    )}
+                    <span className="text-gray-400">•</span>
+                    <span className="flex items-center gap-1.5">
+                      <Calendar size={14} className="text-gray-500" />
+                      <span className="font-medium">
+                        {formatDistanceToNow(new Date(issue.createdAt!), {
+                          addSuffix: false,
+                        }).replace(/^about /, "")}{" "}
+                        ago
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Progress Stage */}
+                  <div
+                    className={`rounded-full px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium ${statusInfo.color}`}
+                  >
+                    <StatusIcon size={14} />
+                    <span>
+                      {issue.status === "open" && "Issue Reported"}
+                      {issue.status === "assigned" && "Taskforce Assigned"}
+                      {issue.status === "in_progress" &&
+                        "Resolution in Progress"}
+                      {issue.status === "resolved" && "Issue Resolved"}
+                      {![
+                        "open",
+                        "assigned",
+                        "in_progress",
+                        "resolved",
+                      ].includes(issue.status) && "Routed to Authorities"}
+                    </span>
                   </div>
 
                   {/* Technician Info */}
-                  {assignedTech && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h4 className="font-medium text-gray-900 mb-3">
-                        Assigned Technician
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <UserIcon size={16} className="text-gray-600" />
-                          <div>
-                            <p className="font-medium">{assignedTech.name}</p>
-                            <p className="text-gray-600">
-                              {assignedTech.specialty}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <Phone size={16} className="text-gray-600" />
-                          <div>
-                            <p className="font-medium">Contact</p>
-                            <p className="text-gray-600">
+                  <div className="bg-gray-50 rounded-full px-4 py-2 flex items-center justify-center gap-2 text-sm">
+                    <UserIcon size={14} className="text-gray-500" />
+                    {assignedTech ? (
+                      <span className="text-gray-800">
+                        <span className="font-semibold">
+                          {assignedTech.name}
+                        </span>
+                        {assignedTech.phone && (
+                          <span className="text-gray-600 ml-2">
+                            <Phone size={12} className="inline mr-1" />
+                            <span className="font-medium">
                               {assignedTech.phone}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <Mail size={16} className="text-gray-600" />
-                          <div>
-                            <p className="font-medium">Email</p>
-                            <p className="text-gray-600">
-                              {assignedTech.email}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-                        <div className="flex items-center space-x-2">
-                          <div
-                            className={`w-3 h-3 rounded-full ${
-                              assignedTech.status === "available"
-                                ? "bg-green-500"
-                                : assignedTech.status === "busy"
-                                ? "bg-yellow-500"
-                                : "bg-red-500"
-                            }`}
-                          />
-                          <span className="text-sm capitalize font-medium">
-                            {assignedTech.status}
+                            </span>
                           </span>
-                        </div>
+                        )}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 font-medium">
+                        No technician assigned yet
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-                        <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
-                            Message
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-gray-800 hover:bg-gray-900"
-                          >
-                            Call
-                          </Button>
+                {/* BOTTOM 50%: Image Section - object-contain to avoid cropping */}
+                <div className="h-1/2 px-4 pb-4 flex items-center justify-center">
+                  {issue.imageUrls && issue.imageUrls.length > 0 ? (
+                    <div className="relative w-full h-full flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
+                      <img
+                        src={issue.imageUrls[0]}
+                        alt="Issue"
+                        className="max-w-full max-h-full object-contain"
+                      />
+                      {issue.imageUrls.length > 1 && (
+                        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md">
+                          +{issue.imageUrls.length - 1} more
                         </div>
-                      </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="w-full h-full rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-sm">
+                        No image attached
+                      </span>
                     </div>
                   )}
-
-                  {/* Images */}
-                  {issue.imageUrls && issue.imageUrls.length > 0 && (
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                      {issue.imageUrls.map((url, idx) => (
-                        <img
-                          key={idx}
-                          src={url}
-                          alt={`Issue image ${idx + 1}`}
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200"
-                        />
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
+                </div>
               </Card>
-            );
-          })}
-
-          {!myIssues?.length && (
-            <div className="min-h-[40vh] flex items-center justify-center text-center">
-              <h3 className="text-xl font-semibold text-gray-800">
-                Haven't reported any issues yet
-              </h3>
             </div>
-          )}
-        </div>
-      </div>
+          </section>
+        );
+      })}
+
+      {/* Empty state - friendly message with CTA */}
+      {!myIssues?.length && (
+        <section className="h-screen pt-14 px-4 sm:px-6 lg:px-8 flex items-center justify-center snap-start snap-always">
+          <div className="text-center max-w-sm mx-auto">
+            {/* Empty state illustration placeholder */}
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText size={32} className="text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              No reports yet
+            </h3>
+            <p className="text-gray-500 text-sm mb-6">
+              You haven't submitted any civic issue reports. Help improve your
+              community by reporting issues you encounter.
+            </p>
+            <Button className="bg-gray-800 hover:bg-gray-900">
+              <PlusCircle size={16} className="mr-2" />
+              Create your first report
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

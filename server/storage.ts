@@ -141,7 +141,7 @@ export class MemStorage implements IStorage {
         severity: "critical",
         status: "in_progress",
         progress: 72,
-        location: "17.5186, 78.3885", // Nizampet Main Road coordinates
+        location: "Nizampet Main Road", // Nizampet Main Road coordinates
         imageUrls: ["/sample-images/pothole on road.webp"],
         reporterId: regularUser.id,
         assignedTechnicianId: technicians[2].id,
@@ -165,7 +165,7 @@ export class MemStorage implements IStorage {
         severity: "major",
         status: "assigned",
         progress: 35,
-        location: "17.5450, 78.3700", // Bachupally Cross Roads coordinates
+        location: "Bachupally Crossroads", // Bachupally Cross Roads coordinates
         imageUrls: ["/sample-images/flcikering streetlights.webp"],
         reporterId: adminUser.id,
         assignedTechnicianId: technicians[1].id,
@@ -189,7 +189,7 @@ export class MemStorage implements IStorage {
         severity: "critical",
         status: "open",
         progress: 8,
-        location: "17.5210, 78.3820", // Nizampet X Roads coordinates
+        location: "Nizampet X Roads", // Nizampet X Roads coordinates
         imageUrls: ["/sample-images/broken traffic sign.webp"],
         reporterId: regularUser.id,
         assignedTechnicianId: null,
@@ -213,7 +213,7 @@ export class MemStorage implements IStorage {
         severity: "moderate",
         status: "open",
         progress: 5,
-        location: "17.5320, 78.3750", // Bachupally Road near JNTU coordinates
+        location: "JNTU Road, Bachupally", // Bachupally Road near JNTU coordinates
         imageUrls: ["/sample-images/trash in park.webp"],
         reporterId: adminUser.id,
         assignedTechnicianId: null,

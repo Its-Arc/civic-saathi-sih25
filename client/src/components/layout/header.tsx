@@ -43,17 +43,17 @@ export function Header({ onMenuToggle }: HeaderProps) {
               variant="ghost"
               size="sm"
               onClick={onMenuToggle}
-              className="p-2 hover:bg-gray-100 transition-colors duration-200"
+              className="p-1.5 hover:bg-gray-100 transition-colors duration-200"
             >
-              <Menu className="text-gray-600" size={20} />
+              <Menu className="text-gray-600" size={28} />
             </Button>
 
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-gray-800 rounded-full flex items-center justify-center">
-                <Bolt className="text-white" size={16} />
+              <div className="h-9 w-9 bg-gray-800 rounded-full flex items-center justify-center">
+                <Bolt className="text-white" size={20} />
               </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-900">
+              <span className="text-xl sm:text-2xl font-bold text-gray-900">
                 CivicSaathi
               </span>
             </div>

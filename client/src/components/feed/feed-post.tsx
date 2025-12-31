@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { LocationDisplay } from "@/components/ui/location-display";
 import { MaintenanceIssue, User } from "@shared/schema";
 import {
   ArrowUp,
@@ -174,9 +175,10 @@ export function FeedPost({ issue, isMobile = false }: FeedPostProps) {
                           d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                         />
                       </svg>
-                      <span className="font-medium truncate max-w-[140px]">
-                        {issue.location}
-                      </span>
+                      <LocationDisplay 
+                        location={issue.location} 
+                        className="font-medium truncate max-w-[140px]"
+                      />
                     </div>
                   )}
                   <span className="text-gray-400">•</span>

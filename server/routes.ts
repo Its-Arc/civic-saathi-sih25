@@ -247,6 +247,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reverse Geocoding API - converts lat/lng to address
+  app.get("/api/reverse-geocode", async (req, res) => {
+    try {
+      const lat = req.query.lat as string;
+      const lon = req.query.lon as string;
+      
+      if (!lat || !lon) {
+        return res
+          .status(400)
+          .json({ message: "Query parameters 'lat' and 'lon' are required" });
+      }
+
+      const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=18&addressdetails=1`;
+
+      const response = await fetch(nominatimUrl, {
+        headers: {
+          "User-Agent": "CivicSaathi-Demo/1.0",
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.warn(`[ReverseGeocode] Nominatim returned ${response.status}`);
+        return res
+          .status(response.status)
+          .json({ message: "Reverse geocoding failed" });
+      }
+
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Reverse geocoding error:", error);
+      res.status(500).json({ message: "Reverse geocoding failed" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

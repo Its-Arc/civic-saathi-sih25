@@ -70,6 +70,22 @@
     overflow-x: hidden;
   }
 
+  /* Smooth scroll behavior for snap scrolling */
+  .snap-y {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar for snap scroll containers */
+  .snap-y::-webkit-scrollbar {
+    display: none;
+  }
+
+  .snap-y {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* Mobile-first optimizations */
   @media (max-width: 768px) {
     html,

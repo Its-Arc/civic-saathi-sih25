@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeIssue, AIAnalysis } from "@/lib/gemini";
 import { createGeminiRealtimeClient } from "@/lib/gemini-realtime";
+import { reverseGeocodeLocation } from "@/lib/geocode";
 import {
   CloudUpload,
   MapPin,
@@ -77,13 +78,34 @@ export function CreatePost() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        // Set coordinates as location (can be reverse geocoded later)
-        setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        
+        // Try to reverse geocode to get a readable address
+        try {
+          const address = await reverseGeocodeLocation(latitude, longitude);
+          if (address) {
+            setLocation(address);
+            toast({
+              title: "Location detected",
+              description: `Found: ${address}`,
+            });
+          } else {
+            // Fallback to coordinates if reverse geocoding fails
+            setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+            toast({
+              title: "Location detected",
+              description: "GPS coordinates captured (address lookup unavailable).",
+            });
+          }
+        } catch (error) {
+          // Fallback to coordinates on error
+          setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          toast({
+            title: "Location detected",
+            description: "GPS coordinates captured.",
+          });
+        }
+        
         setIsGettingLocation(false);
-        toast({
-          title: "Location detected",
-          description: "GPS coordinates captured successfully.",
-        });
       },
       (error) => {
         setIsGettingLocation(false);
