@@ -146,4 +146,7 @@ Open `http://localhost:5173` in your browser.
 - Manage technicians: add specialists, update availability
 
 ---
+### Deployed Application URL
+- **URL**: https://civic-saathi.vercel.app
+---
 
